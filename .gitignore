@@ -1,6 +1,3 @@
-# IDE specific files
-.vscode/
-
 # Build output
 /dist/
 
