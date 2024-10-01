@@ -1,0 +1,27 @@
+{
+  "name": "knittyly.ui",
+  "version": "0.0.1",
+  "description": "TBD",
+  "main": "app.js",
+  "scripts": {
+    "compile": "tsc",
+    "copy": "copyfiles -u 1 ./src/styles/* ./dist && copyfiles -u 1 ./src/html/* ./dist",
+    "build": "npm run compile && npm run copy",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server -c-1 -p 8081 -o ./dist/html/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/textyly/knittyly.ui.git"
+  },
+  "author": "textyly community",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/textyly/knittyly.ui/issues"
+  },
+  "homepage": "https://github.com/textyly/knittyly.ui#readme",
+  "devDependencies": {
+    "copyfiles": "^2.4.1",
+    "http-server": "^14.1.1"
+  }
+}

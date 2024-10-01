@@ -1,0 +1,8 @@
+# IDE specific files
+.vscode/
+
+# Build output
+/dist/
+
+# Node.js dependencies
+/node_modules/
