@@ -3,12 +3,13 @@
   "version": "0.0.1",
   "description": "TBD",
   "main": "app.js",
+  "type": "module",
   "scripts": {
     "compile": "tsc",
     "copy": "copyfiles -u 1 ./src/styles/* ./dist && copyfiles -u 1 ./src/html/* ./dist",
     "build": "npm run compile && npm run copy",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "http-server -c-1 -p 8081 -o ./dist/html/index.html"
+    "start": "http-server -c-1 -p 8081 -o ./dist/html/index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",

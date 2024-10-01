@@ -1,5 +1,6 @@
-var grid = document.getElementById("grid");
-var svgNS = grid?.namespaceURI;
+import { Test } from "./dept.js"
+
+const grid = document.getElementById("grid");
 var step = 20;
 
 for (let width = 0; width < 20; width++) {
@@ -21,7 +22,10 @@ for (let width = 0; width < 20; width++) {
         };
 
         rect.onmousedown = (_) => {
-            rect.style.fill = "red";    
+            rect.style.fill = "red";
         }
     }
 }
+
+const t = new Test();
+t.test();
