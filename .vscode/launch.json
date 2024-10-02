@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome", // Change to "pwa-msedge" if you want to debug in Edge
+            "request": "launch",
+            "name": "Launch Chrome",
+            "url": "http://localhost:5000/dist/html/index.html", // Update to your local server's URL or file path
+            "webRoot": "${workspaceFolder}", // Root folder of your HTML/JS/TS files
+            "sourceMaps": true, // Enable source maps for debugging TypeScript
+        }
+    ]
+}

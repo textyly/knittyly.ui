@@ -6,9 +6,10 @@
   "type": "module",
   "scripts": {
     "compile": "tsc",
-    "copy": "copyfiles -u 1 ./src/styles/* ./dist && copyfiles -u 1 ./src/html/* ./dist",
-    "build": "npm run compile && npm run copy",
-    "start": "http-server -c-1 -p 8081 -o ./dist/html/index.html",
+    "copy": "node ./scripts/copy.js",
+    "build": "npm i && npm run compile && npm run copy",
+    "start-server": "http-server ./ -p 5000 -c-1",
+    "start": "npm run build && npm run start-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,7 +23,7 @@
   },
   "homepage": "https://github.com/textyly/knittyly.ui#readme",
   "devDependencies": {
-    "copyfiles": "^2.4.1",
+    "fs-extra": "^11.2.0",
     "http-server": "^14.1.1"
   }
 }
