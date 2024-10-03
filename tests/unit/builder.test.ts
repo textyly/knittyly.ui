@@ -5,6 +5,6 @@ describe('app builder', () => {
     it('build return app', () => {
         const builder = new AppBuilder();
         const app = builder.build();
-        expect(undefined).to.exist;
+        expect(app).to.exist;
     });
 });
