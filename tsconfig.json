@@ -1,17 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ES2020", // Update target to ES2020 for more modern features
-    "module": "ESNext", // Use ESNext module syntax for better compatibility with modern frameworks
-    "outDir": "./dist/code", // Output directory for compiled JavaScript files
-    "rootDir": "./src/code", // Root directory of your source files
-    "strict": true, // Enable all strict type-checking options
-    "sourceMap": true, // Generate source maps for easier debugging
+    "target": "ES2020",
+    "module": "ESNext",
+    "outDir": "./dist/code",
+    "rootDir": "./src/code",
+    "strict": true,
+    "sourceMap": true,
   },
   "include": [
-    "src/code/**/*" // Include all TypeScript files in the src directory
+    "src/code/**/*"
   ],
   "exclude": [
-    "node_modules", // Exclude the node_modules directory
-    "dist" // Exclude the dist directory
+    "node_modules",
+    "dist",
+    "dist-tests"
   ]
 }

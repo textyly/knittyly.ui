@@ -4,11 +4,32 @@
         {
             "type": "chrome",
             "request": "launch",
-            "name": "Launch Chrome",
+            "name": "debug",
             "url": "http://localhost:5000/dist/index.html",
             "webRoot": "${workspaceFolder}",
             "preLaunchTask": "npm: build",
             "sourceMaps": true,
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "debug tests",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/mocha",
+            "args": [
+                "--timeout",
+                "30000",
+                "${workspaceFolder}/dist-tests/**/*.test.js"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/dist-tests/**/*.js"
+            ],
+            "sourceMaps": true,
+            "preLaunchTask": "npm: build-tests",
         }
     ]
 }

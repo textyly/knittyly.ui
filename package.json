@@ -10,7 +10,9 @@
     "build": "npm i && npm run compile && npm run copy",
     "start-server": "http-server ./ -p 5000 -c-1",
     "start": "npm run build && npm run start-server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "compile:tests": "tsc -p tsconfig.test.json",
+    "build-tests": "npm run build && npm run compile:tests",
+    "test": "npm run build-tests && mocha 'dist-tests/tests/**/*.test.js'"
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,10 @@
   "homepage": "https://github.com/textyly/knittyly.ui#readme",
   "devDependencies": {
     "fs-extra": "^11.2.0",
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
+    "chai": "^5.0.0",
+    "mocha": "^10.2.0"
   }
 }
