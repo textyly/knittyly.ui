@@ -3,11 +3,11 @@ name: Run Tests
 on: 
     push:
         branches:
-            - create-an-initial-repo
+            - master
 
     pull_request:
         branches:
-            - create-an-initial-repo
+            - master
             
 jobs:
     test:
