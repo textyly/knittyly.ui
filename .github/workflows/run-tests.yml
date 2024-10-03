@@ -1,0 +1,29 @@
+name: Run Tests
+
+on: 
+    push:
+        branches:
+            - create-an-initial-repo
+
+    pull_request:
+        branches:
+            - create-an-initial-repo
+            
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+
+            - name: Set up Node.js
+              uses: actions/checkout@v3
+              with:
+                node version: "18"
+
+            - name: Run Tests
+              run: npm test
+
+
+
