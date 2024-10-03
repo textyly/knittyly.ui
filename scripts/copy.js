@@ -7,8 +7,6 @@ try {
 
     withAssets();
 
-    withHtmlFiles();
-
     withStyles();
 
     console.log("copying succeed.");
@@ -24,11 +22,6 @@ function withIndexPage() {
 function withAssets() {
     console.log("copying rest of the html files to dist...");
     fs.copySync("./assets", "./dist/assets");
-}
-
-function withHtmlFiles() {
-    console.log("copying rest of the html files to dist...");
-    fs.copySync("./src/html", "./dist/html");
 }
 
 function withStyles() {
