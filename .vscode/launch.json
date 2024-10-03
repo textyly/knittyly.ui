@@ -7,7 +7,7 @@
             "name": "debug",
             "url": "http://localhost:5000/dist/index.html",
             "webRoot": "${workspaceFolder}",
-            "preLaunchTask": "npm: build",
+            "preLaunchTask": "build",
             "sourceMaps": true,
         },
         {
@@ -29,7 +29,7 @@
                 "${workspaceFolder}/dist-tests/**/*.js"
             ],
             "sourceMaps": true,
-            "preLaunchTask": "npm: build-tests",
+            "preLaunchTask": "build:tests",
         }
     ]
 }

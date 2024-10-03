@@ -8,11 +8,11 @@
     "compile": "tsc",
     "copy": "node ./scripts/copy.js",
     "build": "npm i && npm run compile && npm run copy",
-    "start-server": "http-server ./ -p 5000 -c-1",
-    "start": "npm run build && npm run start-server",
+    "start:server": "http-server ./ -p 5000 -c-1",
+    "start": "npm run build && npm run start:server",
     "compile:tests": "tsc -p tsconfig.test.json",
-    "build-tests": "npm run build && npm run compile:tests",
-    "test": "npm run build-tests && mocha 'dist-tests/tests/**/*.test.js'"
+    "build:tests": "npm run build && npm run compile:tests",
+    "test": "npm run build:tests && mocha 'dist-tests/tests/**/*.test.js'"
   },
   "repository": {
     "type": "git",
