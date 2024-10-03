@@ -5,12 +5,12 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "compile": "tsc",
+    "compile": "tsc --version && tsc",
     "copy": "node ./scripts/copy.js",
     "build": "npm i && npm run compile && npm run copy",
     "start:server": "http-server ./ -p 5000 -c-1",
     "start": "npm run build && npm run start:server",
-    "compile:tests": "tsc -p tsconfig.test.json",
+    "compile:tests": "tsc --version && tsc -p tsconfig.test.json",
     "build:tests": "npm run build && npm run compile:tests",
     "test": "npm run build:tests && mocha 'dist-tests/tests/**/*.test.js'",
     "clear": "node ./scripts/clear.js"
@@ -26,11 +26,12 @@
   },
   "homepage": "https://github.com/textyly/knittyly.ui#readme",
   "devDependencies": {
-    "fs-extra": "^11.2.0",
-    "http-server": "^14.1.1",
     "@types/chai": "^5.0.0",
     "@types/mocha": "^10.0.8",
     "chai": "^5.1.1",
-    "mocha": "^10.7.3"
+    "fs-extra": "^11.2.0",
+    "http-server": "^14.1.1",
+    "mocha": "^10.7.3",
+    "typescript": "^5.6.2"
   }
 }
