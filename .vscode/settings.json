@@ -12,6 +12,7 @@
         "**/scripts": true,
         "**/tsconfig*.json": true,
         "**/.gitignore": true,
+        "**/.github": true,
         "**/LICENSE": true,
         "**/README*": true,
     }
