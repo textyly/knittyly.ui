@@ -1,6 +1,11 @@
 name: Run Tests
 
 on: 
+    push:
+      branches:
+        - develop
+        - master
+
     pull_request:
         branches:
             - develop
@@ -29,6 +34,3 @@ jobs:
                     
             - name: Run Tests
               run: npm test
-
-
-
