@@ -1,14 +1,10 @@
 name: Run Tests
 
 on: 
-    push:
-        branches:
-            - create-an-initial-repo
-
     pull_request:
         branches:
-            - create-an-initial-repo
-            
+            - develop
+            - master
 jobs:
     test:
         runs-on: ubuntu-latest
@@ -20,7 +16,7 @@ jobs:
             - name: Set up Node.js
               uses: actions/setup-node@v3
               with:
-                node-version: "20"
+                node-version: '20'
 
             - name: Cache npm modules
               uses: actions/cache@v3
