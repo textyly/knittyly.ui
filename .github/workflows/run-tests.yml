@@ -1,10 +1,13 @@
 name: Run Tests
 
 on: 
+    push:
+        branches:
+            - create-an-initial-repo
+
     pull_request:
         branches:
-            - maste
-            - develop
+            - create-an-initial-repo
             
 jobs:
     test:
@@ -15,10 +18,18 @@ jobs:
               uses: actions/checkout@v3
 
             - name: Set up Node.js
-              uses: actions/checkout@v3
+              uses: actions/setup-node@v3
               with:
-                node version: "18"
+                node-version: "20"
 
+            - name: Cache npm modules
+              uses: actions/cache@v3
+              with:
+                path: node_modules
+                key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+                restore-keys: |
+                  ${{ runner.os }}-node-
+                    
             - name: Run Tests
               run: npm test
 
