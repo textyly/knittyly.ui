@@ -1,0 +1,19 @@
+{
+    "cSpell.words": [
+        "copyfiles",
+        "knittyly",
+        "textyly"
+    ],
+    "files.exclude": {
+        "**/dist*": true,
+        "**/package*.json": true,
+        "**/node_modules": true,
+        "**/assets": true,
+        "**/scripts": true,
+        "**/tsconfig*.json": true,
+        "**/.gitignore": true,
+        "**/.github": true,
+        "**/LICENSE": true,
+        "**/README*": true,
+    }
+}
