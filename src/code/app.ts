@@ -23,6 +23,7 @@ export class App {
 
                 rect.onmousedown = (_) => {
                     rect.style.fill = "red";
+                    
                 }
             }
         }
