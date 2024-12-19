@@ -69,6 +69,7 @@ export abstract class VirtualCanvasBase implements IVirtualCanvas {
     // #region abstract
 
     protected abstract initializeCore(): void;
+    public abstract draw(): void;
     protected abstract disposeCore(): void;
 
     // #endregion

@@ -10,8 +10,6 @@ import {
 
 export class VirtualCanvas extends VirtualCanvasBase {
     // #region fields 
-
-    private nextDotId: number;
     private dots: Map<number, Dot>;
 
     private dotRadius: number;
@@ -19,7 +17,7 @@ export class VirtualCanvas extends VirtualCanvasBase {
     private hoveredDot?: Dot & { originalDot: Dot }; // TODO: ugly!!!
     private clickedDot?: Dot;
 
-    private nextLinkId: number;
+    private nextId: number;
     private link?: Link;
 
     private lines: Array<Line>;
@@ -33,10 +31,9 @@ export class VirtualCanvas extends VirtualCanvasBase {
     constructor(private canvas: IHeadlessCanvas) {
         super();
 
-        this.nextLinkId = 0;
+        this.nextId = 0;
         this.lines = [];
 
-        this.nextDotId = 0;
         this.dotRadius = 2;
         this.dotSpacing = 20;
         this.dots = new Map<number, Dot>;
@@ -90,7 +87,7 @@ export class VirtualCanvas extends VirtualCanvasBase {
         const dot = this.getDot(position.x, position.y);
         if (dot) {
             if (dot.id !== this.hoveredDot?.id && dot.id !== this.hoveredDot?.originalDot?.id) {
-                this.hoveredDot = { x: dot.x, y: dot.y, radius: dot.radius + 2, id: ++this.nextLinkId, originalDot: dot };
+                this.hoveredDot = { x: dot.x, y: dot.y, radius: dot.radius + 2, id: ++this.nextId, originalDot: dot };
                 const dotHoveredEvent = { dot: this.hoveredDot };
                 super.invokeDotHovered(dotHoveredEvent);
             }
@@ -107,7 +104,7 @@ export class VirtualCanvas extends VirtualCanvasBase {
                 super.invokeRemoveLink({ link: this.link });
             }
 
-            this.link = { id: (this.nextLinkId += 1), from: this.clickedDot, to: { id: ++this.nextLinkId, x: position.x, y: position.y, radius: this.dotRadius }, type: this.mousePosition };
+            this.link = { id: (this.nextId += 1), from: this.clickedDot, to: { id: ++this.nextId, x: position.x, y: position.y, radius: this.dotRadius }, type: this.mousePosition };
             super.invokeDrawLink({ link: this.link });
         }
     }
@@ -188,7 +185,7 @@ export class VirtualCanvas extends VirtualCanvasBase {
 
         for (let y = this.dotSpacing; y < this.canvas.size.height; y += this.dotSpacing) {
             for (let x = this.dotSpacing; x < this.canvas.size.width; x += this.dotSpacing) {
-                const id = ++this.nextLinkId;
+                const id = ++this.nextId;
                 dots.set(id, { id, x, y, radius: this.dotRadius });
             }
         }

@@ -1,4 +1,5 @@
-import { AppBuilder } from "./builder.js";
+import { CanvasBuilder } from "./builder.js";
 
-const builder = new AppBuilder();
-builder.build();
+const canvasBuilder = new CanvasBuilder();
+const canvas = canvasBuilder.build();
+canvas.draw();

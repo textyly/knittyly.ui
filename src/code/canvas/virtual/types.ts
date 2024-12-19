@@ -35,6 +35,7 @@ export type DotUnhoveredListener = Listener<DotUnhoveredEvent>;
 
 export interface IVirtualCanvas {
     initialize(): void;
+    draw(): void;
     dispose(): void;
 
     onDrawGrid(listener: DrawGridListener): VoidUnsubscribe;

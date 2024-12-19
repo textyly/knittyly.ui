@@ -9,7 +9,7 @@ import {
     Position
 } from "./types.js";
 
-export class HeadlessCanvasThrottler extends HeadlessCanvasBase {
+export class UserInputCanvasThrottler extends HeadlessCanvasBase {
 
     // #region fields
 
@@ -31,7 +31,7 @@ export class HeadlessCanvasThrottler extends HeadlessCanvasBase {
 
         this.timerInterval = 50;
 
-        const className = HeadlessCanvasThrottler.name;
+        const className = UserInputCanvasThrottler.name;
         this.validator = new HeadlessCanvasThrottlerValidator(className);
     }
 
