@@ -1,20 +1,19 @@
-import { HeadlessCanvasBase } from "./base.js";
+import { TransparentCanvas } from "./base.js";
 import { Unsubscribe, VoidListener } from "../../utilities/messaging/types.js";
 import { HeadlessCanvasThrottlerValidator } from "../../utilities/validators/canvas/headless/throttler.js";
 import {
     CanvasEventType,
-    IHeadlessCanvas,
+    ITransparentCanvas,
     MouseLeftButtonDownEvent,
     MouseMoveEvent,
     Position
 } from "./types.js";
 
-export class UserInputCanvasThrottler extends HeadlessCanvasBase {
+export class UserInputThrottler extends TransparentCanvas {
 
     // #region fields
 
     private groupedEvents: Array<CanvasEvent>;
-    private unFuncs: Array<Unsubscribe<VoidListener>>;
 
     private timerInterval: number;
     private timerId?: number;
@@ -23,15 +22,14 @@ export class UserInputCanvasThrottler extends HeadlessCanvasBase {
 
     // #endregion
 
-    constructor(private canvas: IHeadlessCanvas) {
+    constructor(private canvas: ITransparentCanvas) {
         super(canvas.size.width, canvas.size.height);
 
         this.groupedEvents = [];
-        this.unFuncs = [];
 
         this.timerInterval = 50;
 
-        const className = UserInputCanvasThrottler.name;
+        const className = UserInputThrottler.name;
         this.validator = new HeadlessCanvasThrottlerValidator(className);
     }
 
@@ -39,24 +37,22 @@ export class UserInputCanvasThrottler extends HeadlessCanvasBase {
 
     protected override initializeCore(): void {
         const zoomInUn = this.canvas.onZoomIn(this.handleZoomIn.bind(this));
-        this.unFuncs.push(zoomInUn);
+        super.registerUn(zoomInUn);
 
         const zoomOutUn = this.canvas.onZoomOut(this.handleZoomOut.bind(this));
-        this.unFuncs.push(zoomOutUn);
+        super.registerUn(zoomOutUn);
 
         const mouseMoveUn = this.canvas.onMouseMove(this.handleMouseMove.bind(this));
-        this.unFuncs.push(mouseMoveUn);
+        super.registerUn(mouseMoveUn);
 
         const mouseLeftButtonDown = this.canvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
-        this.unFuncs.push(mouseLeftButtonDown);
+        super.registerUn(mouseLeftButtonDown);
 
         this.timerId = setInterval(this.handleTimer.bind(this), this.timerInterval);
     }
 
     protected override disposeCore(): void {
         clearInterval(this.timerId);
-
-        this.unFuncs.forEach((un) => un());
         this.handleEvents();
     }
 

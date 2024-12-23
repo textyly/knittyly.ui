@@ -1,4 +1,4 @@
-import { Position } from "../../../../canvas/headless/types.js";
+import { Position } from "../../../../canvas/transparent/types.js";
 import { ClassValidator } from "../../class.js";
 
 export class HeadlessCanvasThrottlerValidator extends ClassValidator {

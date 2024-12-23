@@ -1,16 +1,15 @@
-import { VirtualCanvasBase } from "./base.js";
+import { VirtualCanvas } from "./base.js";
 import { Dot, Line, Link, MousePositionType } from "./types.js";
-import { VoidUnsubscribe } from "../../utilities/messaging/types.js";
 import {
-    IHeadlessCanvas,
+    ITransparentCanvas,
     MouseMoveEvent,
     MouseLeftButtonDownEvent,
     Position,
-} from "../headless/types.js";
+} from "../transparent/types.js";
 
-export class VirtualCanvas extends VirtualCanvasBase {
+export class VirtualDrawing extends VirtualCanvas {
     // #region fields 
-    private dots: Map<number, Dot>;
+    private dots: Map<string, Dot>;
 
     private dotRadius: number;
     private dotSpacing: number;
@@ -24,23 +23,19 @@ export class VirtualCanvas extends VirtualCanvasBase {
 
     private mousePosition: MousePositionType;
 
-    private unFuncs: Array<VoidUnsubscribe>;
-
     //#endregion
 
-    constructor(private canvas: IHeadlessCanvas) {
-        super();
+    constructor(private canvas: ITransparentCanvas) {
+        super(canvas.size.width, canvas.size.height);
 
         this.nextId = 0;
         this.lines = [];
 
         this.dotRadius = 2;
         this.dotSpacing = 20;
-        this.dots = new Map<number, Dot>;
+        this.dots = new Map<string, Dot>;
 
         this.mousePosition = MousePositionType.BACK;
-
-        this.unFuncs = [];
     }
 
     // #region abstract overrides
@@ -50,7 +45,7 @@ export class VirtualCanvas extends VirtualCanvasBase {
     }
 
     protected override disposeCore(): void {
-        this.unsubscribe();
+        // do nothing
     }
 
     // #endregion
@@ -59,21 +54,16 @@ export class VirtualCanvas extends VirtualCanvasBase {
 
     private subscribe(): void {
         const zoomInUn = this.canvas.onZoomIn(this.handleZoomIn.bind(this));
-        this.unFuncs.push(zoomInUn);
+        super.registerUn(zoomInUn);
 
         const zoomOutUn = this.canvas.onZoomOut(this.handleZoomOut.bind(this));
-        this.unFuncs.push(zoomOutUn);
+        super.registerUn(zoomOutUn);
 
         const mouseMoveUn = this.canvas.onMouseMove(this.handleMouseMove.bind(this));
-        this.unFuncs.push(mouseMoveUn);
+        super.registerUn(mouseMoveUn);
 
         const mouseLeftButtonDownUn = this.canvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
-        this.unFuncs.push(mouseLeftButtonDownUn);
-    }
-
-    private unsubscribe(): void {
-        this.unFuncs.forEach((un) => un());
-        this.unFuncs = [];
+        super.registerUn(mouseLeftButtonDownUn);
     }
 
     private handleMouseMove(event: MouseMoveEvent) {
@@ -87,7 +77,7 @@ export class VirtualCanvas extends VirtualCanvasBase {
         const dot = this.getDot(position.x, position.y);
         if (dot) {
             if (dot.id !== this.hoveredDot?.id && dot.id !== this.hoveredDot?.originalDot?.id) {
-                this.hoveredDot = { x: dot.x, y: dot.y, radius: dot.radius + 2, id: ++this.nextId, originalDot: dot };
+                this.hoveredDot = { x: dot.x, y: dot.y, radius: dot.radius + 2, id: this.getNextId(), originalDot: dot };
                 const dotHoveredEvent = { dot: this.hoveredDot };
                 super.invokeDotHovered(dotHoveredEvent);
             }
@@ -104,7 +94,7 @@ export class VirtualCanvas extends VirtualCanvasBase {
                 super.invokeRemoveLink({ link: this.link });
             }
 
-            this.link = { id: (this.nextId += 1), from: this.clickedDot, to: { id: ++this.nextId, x: position.x, y: position.y, radius: this.dotRadius }, type: this.mousePosition };
+            this.link = { id: this.getNextId(), from: this.clickedDot, to: { id: this.getNextId(), x: position.x, y: position.y, radius: this.dotRadius }, type: this.mousePosition };
             super.invokeDrawLink({ link: this.link });
         }
     }
@@ -180,12 +170,12 @@ export class VirtualCanvas extends VirtualCanvasBase {
     }
 
 
-    private createDots(): Map<number, Dot> {
-        const dots = new Map<number, Dot>();
+    private createDots(): Map<string, Dot> {
+        const dots = new Map<string, Dot>();
 
         for (let y = this.dotSpacing; y < this.canvas.size.height; y += this.dotSpacing) {
             for (let x = this.dotSpacing; x < this.canvas.size.width; x += this.dotSpacing) {
-                const id = ++this.nextId;
+                const id = this.getNextId();
                 dots.set(id, { id, x, y, radius: this.dotRadius });
             }
         }
@@ -215,6 +205,12 @@ export class VirtualCanvas extends VirtualCanvasBase {
                 return dot;
             }
         }
+    }
+
+    private getNextId(): string {
+        const id = ++this.nextId;
+        const strId = id.toString();
+        return strId;
     }
 
     // #endregion

@@ -1,10 +1,12 @@
-import { Position } from "../headless/types.js";
+import { ICanvas } from "../types.js";
+import { Position } from "../transparent/types.js";
 import { Listener, VoidUnsubscribe } from "../../utilities/messaging/types.js";
 
 // #region types
-export type Dot = Position & { id: number, radius: number };
+export type Id = string;
+export type Dot = Position & { id: Id, radius: number };
 export type Line = { from: Dot, to: Dot, type: LineType }
-export type Link = Line & { id: number };
+export type Link = Line & { id: Id };
 export type LineType = MousePositionType; /// TODO: !!!
 
 export type DrawGridEvent = { dots: Array<Dot>, lines: Array<Line> };
@@ -33,17 +35,15 @@ export type DotUnhoveredListener = Listener<DotUnhoveredEvent>;
 
 // #region interfaces
 
-export interface IVirtualCanvas {
-    initialize(): void;
-    draw(): void;
-    dispose(): void;
-
+export interface IVirtualCanvas extends ICanvas {
     onDrawGrid(listener: DrawGridListener): VoidUnsubscribe;
     onDrawLine(listener: DrawLineListener): VoidUnsubscribe;
     onDrawLink(listener: DrawLinkListener): VoidUnsubscribe;
     onRemoveLink(listener: RemoveLinkListener): VoidUnsubscribe;
     onDotHovered(listener: DotHoveredListener): VoidUnsubscribe;
     onDotUnhovered(listener: DotUnhoveredListener): VoidUnsubscribe;
+
+    draw(): void;
 }
 
 // #endregion

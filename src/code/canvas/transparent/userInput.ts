@@ -1,8 +1,8 @@
-import { HeadlessCanvasBase } from "./base.js";
-import { MouseEventHandler, Position, WheelChangeHandler } from "./types.js";
+import { TransparentCanvas } from "./base.js";
 import { HtmlCanvas, HtmlCanvasEvents } from "../visible/types.js";
+import { MouseEventHandler, Position, WheelChangeHandler } from "./types.js";
 
-export class UserInputCanvasCapturer extends HeadlessCanvasBase {
+export class UserInputCanvas extends TransparentCanvas {
 
     //#region fields
 

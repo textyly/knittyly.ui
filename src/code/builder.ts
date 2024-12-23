@@ -1,63 +1,64 @@
-import { UserInputCanvasThrottler } from "./canvas/headless/throttler.js";
-import { UserInputCanvasCapturer } from "./canvas/headless/ui.js";
-import { IHeadlessCanvas } from "./canvas/headless/types.js";
-import { VirtualCanvas } from "./canvas/virtual/virtual.js";
-import { GridCanvas } from "./canvas/visible/grid.js";
-import { UnknownCanvas } from "./canvas/visible/unknown.js";
+import { UserInputThrottler } from "./canvas/transparent/throttler.js";
+import { UserInputCanvas } from "./canvas/transparent/userInput.js";
+import { ITransparentCanvas } from "./canvas/transparent/types.js";
+import { VirtualDrawing } from "./canvas/virtual/drawing.js";
+import { DotCanvas } from "./canvas/visible/dot.js";
+import { CueCanvas } from "./canvas/visible/cue.js";
 import { IVirtualCanvas } from "./canvas/virtual/types.js";
+import { RasterCanvas } from "./canvas/html/raster.js";
+import { SvgCanvas } from "./canvas/html/svg.js";
 
 export class CanvasBuilder {
     public build(): IVirtualCanvas {
-        const userInputSvgCanvas = this.createUserInputSvgCanvas();
-        const userInputCanvasCapturer = this.createUserInputCanvasCapturer(userInputSvgCanvas);
-        const headlessCanvas = this.createUserInputCanvasThrottler(userInputCanvasCapturer);
-        const virtualCanvas = this.createVirtualCanvas(headlessCanvas);
-        const gridCanvas = this.createGridCanvas(virtualCanvas);
-        const unknownCanvas = this.createUnknownCanvas(virtualCanvas);
-        return virtualCanvas
+        const userInputCanvasCapturer = this.buildUserInputCanvasCapturer();
+        const userInputCanvasThrottler = this.buildUserInputCanvasThrottler(userInputCanvasCapturer);
+        const virtualCanvas = this.buildVirtualCanvas(userInputCanvasThrottler);
+
+        this.buildDotCanvas(virtualCanvas);
+        this.buildUnknownCanvas(virtualCanvas);
+
+        return virtualCanvas;
     }
 
-    // this svg canvas will be used only for user input activity, such as mouse event handling
-    private createUserInputSvgCanvas(): HTMLElement {
-        const canvas = document.getElementById("plot") as HTMLElement;
-        canvas.setAttribute("width", window.innerWidth.toString());
-        canvas.setAttribute("height", window.innerHeight.toString());
-        return canvas;
-    }
+    private buildUserInputCanvasCapturer(): ITransparentCanvas {
+        const userInputSvgCanvas = document.getElementById("plot") as HTMLElement;
+        userInputSvgCanvas.setAttribute("width", window.innerWidth.toString());
+        userInputSvgCanvas.setAttribute("height", window.innerHeight.toString());
 
-    private createUserInputCanvasCapturer(userInputSvgCanvas: HTMLElement): IHeadlessCanvas {
-        const canvas = new UserInputCanvasCapturer(userInputSvgCanvas);
+        const canvas = new UserInputCanvas(userInputSvgCanvas);
         canvas.initialize();
         return canvas;
     }
 
-    private createUserInputCanvasThrottler(userInputCanvasCapturer: IHeadlessCanvas): IHeadlessCanvas {
-        const headlessCanvas = new UserInputCanvasThrottler(userInputCanvasCapturer);
+    private buildUserInputCanvasThrottler(userInputCanvasCapturer: ITransparentCanvas): ITransparentCanvas {
+        const headlessCanvas = new UserInputThrottler(userInputCanvasCapturer);
         headlessCanvas.initialize();
         return headlessCanvas;
     }
 
-    private createVirtualCanvas(userInputCanvasThrottler: IHeadlessCanvas): IVirtualCanvas {
-        const virtualCanvas = new VirtualCanvas(userInputCanvasThrottler);
+    private buildVirtualCanvas(userInputCanvasThrottler: ITransparentCanvas): IVirtualCanvas {
+        const virtualCanvas = new VirtualDrawing(userInputCanvasThrottler);
         virtualCanvas.initialize();
         return virtualCanvas;
     }
 
-    private createGridCanvas(virtualCanvas: IVirtualCanvas): GridCanvas {
-        const rasterCanvas = document.getElementById("canvas") as HTMLCanvasElement;
-        rasterCanvas.width = window.innerWidth;
-        rasterCanvas.height = window.innerHeight;
+    private buildDotCanvas(virtualCanvas: IVirtualCanvas): void {
+        const htmlCanvas = document.getElementById("canvas") as HTMLCanvasElement;
+        htmlCanvas.width = window.innerWidth;
+        htmlCanvas.height = window.innerHeight;
 
-        const gridCanvas = new GridCanvas(rasterCanvas, virtualCanvas);
-        return gridCanvas;
+        const wrapper = new RasterCanvas(htmlCanvas);
+        const gridCanvas = new DotCanvas(wrapper, virtualCanvas);
+        gridCanvas.initialize();
     }
 
-    private createUnknownCanvas(virtualCanvas: IVirtualCanvas): UnknownCanvas {
+    private buildUnknownCanvas(virtualCanvas: IVirtualCanvas): void {
         const svgCanvas = document.getElementById("svg") as HTMLElement;
-        svgCanvas?.setAttribute("width", window.innerWidth.toString());
-        svgCanvas?.setAttribute("height", window.innerHeight.toString());
+        svgCanvas.setAttribute("width", window.innerWidth.toString());
+        svgCanvas.setAttribute("height", window.innerHeight.toString());
 
-        const unknownCanvas = new UnknownCanvas(svgCanvas, virtualCanvas);
-        return unknownCanvas;
+        const wrapper = new SvgCanvas(svgCanvas);
+        const cueCanvas = new CueCanvas(wrapper, virtualCanvas);
+        cueCanvas.initialize();
     }
 }

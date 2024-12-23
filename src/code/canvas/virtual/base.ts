@@ -1,5 +1,6 @@
 import { Messaging6 } from "../../utilities/messaging/impl.js";
 import { IMessaging6, VoidUnsubscribe } from "../../utilities/messaging/types.js";
+import { Canvas } from "../base.js";
 import {
     DotHoveredEvent,
     DotHoveredListener,
@@ -16,61 +17,52 @@ import {
     RemoveLinkEvent
 } from "./types.js";
 
-export abstract class VirtualCanvasBase implements IVirtualCanvas {
+export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
     // #region fields
 
-    private readonly messaging: IMessaging6<DrawGridEvent, RemoveLinkEvent, DotHoveredEvent, DotUnhoveredEvent, DrawLineEvent, DrawLinkEvent>;
+    private readonly messaging: IMessaging6<DrawGridEvent, DrawLineEvent, DrawLinkEvent, RemoveLinkEvent, DotHoveredEvent, DotUnhoveredEvent>;
 
     // #endregion
 
-    constructor() {
-        const className = VirtualCanvasBase.name;
+    constructor(width: number, height: number) {
+        super(width, height);
+
+        const className = VirtualCanvas.name;
         this.messaging = new Messaging6(className);
         this.messaging.start();
     }
 
     // #region interface
 
-    public initialize(): void {
-        this.initializeCore();
-    }
-
-    public dispose(): void {
-        this.disposeCore();
-        this.messaging.stop();
-    }
-
     public onDrawGrid(listener: DrawGridListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
     }
 
     public onDrawLine(listener: DrawLineListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel5(listener);
-    }
-
-    public onDrawLink(listener: DrawLinkListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel6(listener);
-    }
-
-    public onRemoveLink(listener: RemoveLinkListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel2(listener);
     }
 
-    public onDotHovered(listener: DotHoveredListener): VoidUnsubscribe {
+    public onDrawLink(listener: DrawLinkListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel3(listener);
     }
 
-    public onDotUnhovered(listener: DotUnhoveredListener): VoidUnsubscribe {
+    public onRemoveLink(listener: RemoveLinkListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel4(listener);
+    }
+
+    public onDotHovered(listener: DotHoveredListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel5(listener);
+    }
+
+    public onDotUnhovered(listener: DotUnhoveredListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel6(listener);
     }
 
     // #endregion
 
     // #region abstract
 
-    protected abstract initializeCore(): void;
     public abstract draw(): void;
-    protected abstract disposeCore(): void;
 
     // #endregion
 
@@ -81,23 +73,23 @@ export abstract class VirtualCanvasBase implements IVirtualCanvas {
     }
 
     protected invokeDrawLine(event: DrawLineEvent): void {
-        this.messaging.sendToChannel5(event);
-    }
-
-    protected invokeDrawLink(event: DrawLinkEvent): void {
-        this.messaging.sendToChannel6(event);
-    }
-
-    protected invokeRemoveLink(event: RemoveLinkEvent): void {
         this.messaging.sendToChannel2(event);
     }
 
-    protected invokeDotHovered(event: DotHoveredEvent): void {
+    protected invokeDrawLink(event: DrawLinkEvent): void {
         this.messaging.sendToChannel3(event);
     }
 
-    protected invokeDotUnhovered(event: DotUnhoveredEvent): void {
+    protected invokeRemoveLink(event: RemoveLinkEvent): void {
         this.messaging.sendToChannel4(event);
+    }
+
+    protected invokeDotHovered(event: DotHoveredEvent): void {
+        this.messaging.sendToChannel5(event);
+    }
+
+    protected invokeDotUnhovered(event: DotUnhoveredEvent): void {
+        this.messaging.sendToChannel6(event);
     }
 
     // #endregion

@@ -1,7 +1,7 @@
+import { ICanvas, Size } from "../types";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../utilities/messaging/types";
 
 // #region types 
-export type Size = { width: number, height: number };
 export type SizeChangeEvent = Size;
 export type SizeChangeListener = Listener<Size>;
 
@@ -24,13 +24,7 @@ export type WheelChangeHandler = (event: WheelEvent) => void;
 
 // #region interfaces
 
-export interface IHeadlessCanvas {
-    get size(): Size;
-    set size(value: Size);
-
-    initialize(): void;
-    dispose(): void;
-
+export interface ITransparentCanvas extends ICanvas {
     onZoomIn(listener: ZoomInListener): VoidUnsubscribe;
     onZoomOut(listener: ZoomOutListener): VoidUnsubscribe;
     onSizeChange(listener: SizeChangeListener): VoidUnsubscribe;

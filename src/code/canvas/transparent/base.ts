@@ -1,66 +1,34 @@
 import { Messaging4 } from "../../utilities/messaging/impl.js";
 import { IMessaging4, VoidUnsubscribe } from "../../utilities/messaging/types.js";
-import { HeadlessCanvasBaseValidator } from "../../utilities/validators/canvas/headless/base.js";
+import { Canvas } from "../base.js";
 import {
-    IHeadlessCanvas,
+    ITransparentCanvas,
     MouseLeftButtonDownEvent,
     MouseMoveEvent,
     SizeChangeEvent,
-    Size,
     ZoomInListener,
     ZoomOutListener,
     MouseMoveListener,
-    MouseLeftButtonDownListener,
-    SizeChangeListener
+    MouseLeftButtonDownListener
 } from "./types.js";
 
 
-export abstract class HeadlessCanvasBase implements IHeadlessCanvas {
+export abstract class TransparentCanvas extends Canvas implements ITransparentCanvas {
     // #region fields
 
-    private initialized: boolean;
     private readonly messaging: IMessaging4<void, MouseMoveEvent, MouseLeftButtonDownEvent, SizeChangeEvent>;
-    private readonly baseValidator: HeadlessCanvasBaseValidator;
 
     //#endregion
 
-    constructor(private width: number, private height: number) {
-        this.initialized = false;
+    constructor(width: number, height: number) {
+        super(width, height);
 
-        const className = HeadlessCanvasBase.name;
-        this.baseValidator = new HeadlessCanvasBaseValidator(className);
-
+        const className = TransparentCanvas.name;
         this.messaging = new Messaging4(className);
         this.messaging.start();
     }
 
     // #region interface
-
-    public get size(): Size {
-        return { width: this.width, height: this.height };
-    }
-
-    public set size(value: Size) {
-        this.baseValidator.validateSize(value);
-        this.width = value.width;
-        this.height = value.height;
-        this.invokeSizeChange(value);
-    }
-
-    public initialize(): void {
-        if (!this.initialized) {
-            this.initializeCore();
-            this.initialized = true;
-        }
-    }
-
-    public dispose(): void {
-        if (this.initialized) {
-            this.disposeCore();
-            this.messaging.stop();
-            this.initialized = false;
-        }
-    }
 
     public onZoomIn(listener: ZoomInListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel0(listener);
@@ -68,10 +36,6 @@ export abstract class HeadlessCanvasBase implements IHeadlessCanvas {
 
     public onZoomOut(listener: ZoomOutListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
-    }
-
-    public onSizeChange(listener: SizeChangeListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel4(listener);
     }
 
     public onMouseMove(listener: MouseMoveListener): VoidUnsubscribe {
@@ -107,10 +71,6 @@ export abstract class HeadlessCanvasBase implements IHeadlessCanvas {
 
     protected invokeMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
         this.messaging.sendToChannel3(event);
-    }
-
-    protected invokeSizeChange(event: SizeChangeEvent): void {
-        this.messaging.sendToChannel4(event);
     }
 
     // #endregion
