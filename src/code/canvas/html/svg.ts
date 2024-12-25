@@ -1,6 +1,6 @@
-import { Canvas } from "../base";
-import { Dot } from "../virtual/types";
-import { SvgDot, SvgLine } from "./types";
+import { Canvas } from "../base.js";
+import { Dot } from "../virtual/types.js";
+import { SvgDot, SvgLine } from "./types.js";
 
 export class SvgCanvas extends Canvas {
     private svgCanvas: HTMLElement;
@@ -40,6 +40,23 @@ export class SvgCanvas extends Canvas {
     }
 
     public drawLine(from: Dot, to: Dot): SvgLine {
+        const line = this.drawLineCore(from, to);
+        this.svgCanvas.appendChild(line);
+        return line;
+    }
+
+    public drawDashLine(from: Dot, to: Dot): SvgLine {
+        const line = this.drawLineCore(from, to);
+        line.setAttribute("stroke-dasharray", "5,2");
+        this.svgCanvas.appendChild(line);
+        return line;
+    }
+
+    public removeLine(line: SvgLine): void {
+        this.svgCanvas.removeChild(line);
+    }
+
+    private drawLineCore(from: Dot, to: Dot): SvgLine {
         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
         const x1 = from.x.toString();
         const y1 = from.y.toString();
@@ -56,12 +73,6 @@ export class SvgCanvas extends Canvas {
         line.setAttribute('stroke', 'red');
         line.setAttribute('stroke-width', "2");
 
-        this.svgCanvas.appendChild(line);
-
         return line;
-    }
-
-    public removeLine(line: SvgLine): void {
-        this.svgCanvas.removeChild(line);
     }
 }

@@ -1,6 +1,7 @@
-import { MessagingBase } from "./base.js";
+import { Listener, VoidListener, VoidUnsubscribe } from "../types.js";
+import { Messaging } from "./base.js";
 import {
-    ChannelName,
+    PublicChannelName,
     IMessaging0,
     IMessaging1,
     IMessaging2,
@@ -8,15 +9,12 @@ import {
     IMessaging4,
     IMessaging5,
     IMessaging6,
-    Listener,
-    VoidListener,
-    VoidUnsubscribe
 } from "./types.js";
 
-export class Messaging0 extends MessagingBase implements IMessaging0 {
-    private readonly channel0 = ChannelName.Channel0;
+export class Messaging0 extends Messaging implements IMessaging0 {
+    private readonly channel0 = PublicChannelName.Channel0;
 
-    constructor(public name: string) {
+    constructor(name: string) {
         super(name);
         super.create(this.channel0);
     }
@@ -31,9 +29,9 @@ export class Messaging0 extends MessagingBase implements IMessaging0 {
 }
 
 export class Messaging1<Data1> extends Messaging0 implements IMessaging1<Data1> {
-    private readonly channel1 = ChannelName.Channel1;
+    private readonly channel1 = PublicChannelName.Channel1;
 
-    constructor(public name: string) {
+    constructor(name: string) {
         super(name);
         super.create(this.channel1);
     }
@@ -48,9 +46,9 @@ export class Messaging1<Data1> extends Messaging0 implements IMessaging1<Data1> 
 }
 
 export class Messaging2<Data1, Data2> extends Messaging1<Data1> implements IMessaging2<Data1, Data2> {
-    private readonly channel2 = ChannelName.Channel2;
+    private readonly channel2 = PublicChannelName.Channel2;
 
-    constructor(public name: string) {
+    constructor(name: string) {
         super(name);
         super.create(this.channel2);
     }
@@ -65,9 +63,9 @@ export class Messaging2<Data1, Data2> extends Messaging1<Data1> implements IMess
 }
 
 export class Messaging3<Data1, Data2, Data3> extends Messaging2<Data1, Data2> implements IMessaging3<Data1, Data2, Data3> {
-    private readonly channel3 = ChannelName.Channel3;
+    private readonly channel3 = PublicChannelName.Channel3;
 
-    constructor(public name: string) {
+    constructor(name: string) {
         super(name);
         super.create(this.channel3);
     }
@@ -82,9 +80,9 @@ export class Messaging3<Data1, Data2, Data3> extends Messaging2<Data1, Data2> im
 }
 
 export class Messaging4<Data1, Data2, Data3, Data4> extends Messaging3<Data1, Data2, Data3> implements IMessaging4<Data1, Data2, Data3, Data4> {
-    private readonly channel4 = ChannelName.Channel4;
+    private readonly channel4 = PublicChannelName.Channel4;
 
-    constructor(public name: string) {
+    constructor(name: string) {
         super(name);
         super.create(this.channel4);
     }
@@ -99,9 +97,9 @@ export class Messaging4<Data1, Data2, Data3, Data4> extends Messaging3<Data1, Da
 }
 
 export class Messaging5<Data1, Data2, Data3, Data4, Data5> extends Messaging4<Data1, Data2, Data3, Data4> implements IMessaging5<Data1, Data2, Data3, Data4, Data5> {
-    private readonly channel5 = ChannelName.Channel5;
+    private readonly channel5 = PublicChannelName.Channel5;
 
-    constructor(public name: string) {
+    constructor(name: string) {
         super(name);
         super.create(this.channel5);
     }
@@ -116,9 +114,9 @@ export class Messaging5<Data1, Data2, Data3, Data4, Data5> extends Messaging4<Da
 }
 
 export class Messaging6<Data1, Data2, Data3, Data4, Data5, Data6> extends Messaging5<Data1, Data2, Data3, Data4, Data5> implements IMessaging6<Data1, Data2, Data3, Data4, Data5, Data6> {
-    private readonly channel6 = ChannelName.Channel6;
+    private readonly channel6 = PublicChannelName.Channel6;
 
-    constructor(public name: string) {
+    constructor( name: string) {
         super(name);
         super.create(this.channel6);
     }

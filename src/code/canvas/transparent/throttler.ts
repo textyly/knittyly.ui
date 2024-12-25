@@ -1,6 +1,5 @@
 import { TransparentCanvas } from "./base.js";
-import { Unsubscribe, VoidListener } from "../../utilities/messaging/types.js";
-import { HeadlessCanvasThrottlerValidator } from "../../utilities/validators/canvas/headless/throttler.js";
+import { HeadlessCanvasThrottlerValidator } from "../../validators/canvas/headless/throttler.js";
 import {
     CanvasEventType,
     ITransparentCanvas,
@@ -88,7 +87,7 @@ export class UserInputThrottler extends TransparentCanvas {
         }
     }
 
-    private handleMouseMove(event: MouseMoveEvent) {
+    private handleMouseMove(event: MouseMoveEvent): void {
         const position = event.position;
         this.validator.validatePosition(position);
 

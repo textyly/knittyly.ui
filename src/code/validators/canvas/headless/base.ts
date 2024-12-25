@@ -1,4 +1,4 @@
-import { Size } from "../../../../canvas/types.js";
+import { Size } from "../../../canvas/types.js";
 import { ClassValidator } from "../../class.js";
 import { SizeValidator } from "../size.js";
 

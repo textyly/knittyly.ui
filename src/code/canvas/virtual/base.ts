@@ -1,5 +1,6 @@
-import { Messaging6 } from "../../utilities/messaging/impl.js";
-import { IMessaging6, VoidUnsubscribe } from "../../utilities/messaging/types.js";
+import { Messaging6 } from "../../messaging/impl.js";
+import { IMessaging6 } from "../../messaging/types.js";
+import { VoidUnsubscribe } from "../../types.js";
 import { Canvas } from "../base.js";
 import {
     DotHoveredEvent,

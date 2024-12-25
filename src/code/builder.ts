@@ -2,11 +2,11 @@ import { UserInputThrottler } from "./canvas/transparent/throttler.js";
 import { UserInputCanvas } from "./canvas/transparent/userInput.js";
 import { ITransparentCanvas } from "./canvas/transparent/types.js";
 import { VirtualDrawing } from "./canvas/virtual/drawing.js";
-import { DotCanvas } from "./canvas/visible/dot.js";
-import { CueCanvas } from "./canvas/visible/cue.js";
+import { CueCanvas } from "./canvas/visible/cue/base.js";
 import { IVirtualCanvas } from "./canvas/virtual/types.js";
 import { RasterCanvas } from "./canvas/html/raster.js";
 import { SvgCanvas } from "./canvas/html/svg.js";
+import { FrontDotCanvas } from "./canvas/visible/dot/front.js";
 
 export class CanvasBuilder {
     public build(): IVirtualCanvas {
@@ -48,7 +48,7 @@ export class CanvasBuilder {
         htmlCanvas.height = window.innerHeight;
 
         const wrapper = new RasterCanvas(htmlCanvas);
-        const gridCanvas = new DotCanvas(wrapper, virtualCanvas);
+        const gridCanvas = new FrontDotCanvas(wrapper, virtualCanvas);
         gridCanvas.initialize();
     }
 

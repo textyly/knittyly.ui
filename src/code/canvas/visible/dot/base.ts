@@ -1,10 +1,10 @@
-import { Canvas } from "../base.js";
-import { RasterCanvas } from "../html/raster.js";
-import { DrawGridEvent, DrawLineEvent, IVirtualCanvas } from "../virtual/types.js";
+import { Canvas } from "../../base.js";
+import { RasterCanvas } from "../../html/raster.js";
+import { DrawGridEvent, DrawLineEvent, IVirtualCanvas, Line } from "../../virtual/types.js";
 
-export class DotCanvas extends Canvas {
-    private readonly rasterCanvas: RasterCanvas;
-    private readonly virtualCanvas: IVirtualCanvas;
+export abstract class DotCanvas extends Canvas {
+    protected readonly rasterCanvas: RasterCanvas;
+    protected readonly virtualCanvas: IVirtualCanvas;
 
     constructor(rasterCanvas: RasterCanvas, virtualCanvas: IVirtualCanvas) {
         super(virtualCanvas.size.width, virtualCanvas.size.height);
@@ -25,19 +25,21 @@ export class DotCanvas extends Canvas {
         // base class will unsubscribe handleDrawGrid and handleDrawLine
     }
 
+    abstract drawLine(line: Line): void;
+
     private handleDrawGrid(event: DrawGridEvent): void {
-        // this handler might be drawing intensive, which means it can impact the CPU usage and smooth visualization
+        // this handler might be drawing intensive, which means it might impact the CPU usage and smooth visualization
         this.rasterCanvas.clear();
 
         const dots = event.dots;
         dots.forEach((dot) => this.rasterCanvas.drawDot(dot));
 
         const lines = event.lines;
-        lines.forEach((line) => this.rasterCanvas.drawLine(line));
+        lines.forEach((line) => this.drawLine(line));
     }
 
     private handleDrawLine(event: DrawLineEvent): void {
-        // this handler might be drawing intensive, which means it can impact the CPU usage and smooth visualization
-        this.rasterCanvas.drawLine(event.line);
+        const line = event.line;
+        this.drawLine(line);
     }
 }

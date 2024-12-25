@@ -1,4 +1,4 @@
-import { Dot, Line } from "../virtual/types";
+import { Dot, Line } from "../virtual/types.js";
 
 export class RasterCanvas {
     private readonly context: CanvasRenderingContext2D;

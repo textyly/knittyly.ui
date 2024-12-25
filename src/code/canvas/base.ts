@@ -1,8 +1,9 @@
-import { Messaging1 } from "../utilities/messaging/impl";
-import { IMessaging1, VoidUnsubscribe } from "../utilities/messaging/types";
-import { SizeValidator } from "../utilities/validators/canvas/size";
-import { SizeChangeEvent, SizeChangeListener } from "./transparent/types";
-import { ICanvas, Size } from "./types";
+import { Messaging1 } from "../messaging/impl.js";
+import { IMessaging1 } from "../messaging/types.js";
+import { VoidUnsubscribe } from "../types.js";
+import { SizeValidator } from "../validators/canvas/size.js";
+import { SizeChangeEvent, SizeChangeListener } from "./transparent/types.js";
+import { ICanvas, Size } from "./types.js";
 
 export abstract class Canvas implements ICanvas {
     // #region fields
@@ -19,7 +20,9 @@ export abstract class Canvas implements ICanvas {
         this.initialized = false;
 
         this.sizeValidator = new SizeValidator();
-        this.sizeValidator.validateWidthAndHeight(width, height);
+
+        const size = { width, height };
+        this.sizeValidator.validateSize(size);
 
         const className = Canvas.name;
         this.msg = new Messaging1(className);
@@ -31,7 +34,8 @@ export abstract class Canvas implements ICanvas {
     // #region interface
 
     public get size(): Size {
-        return { width: this.width, height: this.height };
+        const size = { width: this.width, height: this.height };
+        return size;
     }
 
     public set size(value: Size) {

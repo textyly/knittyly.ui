@@ -1,5 +1,8 @@
 // #region types 
 
+import { ITelemetryEmitter } from "../telemetry/types";
+import { Listener, VoidListener, VoidUnsubscribe } from "../types";
+
 /**
  * 
  */
@@ -20,20 +23,6 @@ export type ChannelListener = Listener<ChannelData>;
  */
 export type ChannelListeners = Array<ChannelListener>;
 
-/**
-* 
-*/
-export type Unsubscribe<T> = () => Listener<T> | undefined;
-
-export type VoidUnsubscribe = Unsubscribe<VoidListener>;
-
-/**
-* 
-*/
-export type Listener<T> = (event: T) => void;
-
-export type VoidListener = Listener<void>;
-
 // #endregion
 
 // #region interfaces 
@@ -41,7 +30,7 @@ export type VoidListener = Listener<void>;
 /**
  * 
  */
-export interface IMessaging {
+export interface IMessaging extends ITelemetryEmitter {
     /**
      * 
      */
@@ -187,7 +176,7 @@ export interface IMessaging6<Data1, Data2, Data3, Data4, Data5, Data6> extends I
 /**
  * 
  */
-export enum ChannelName {
+export enum PublicChannelName {
     Channel0 = "channel0",
     Channel1 = "channel1",
     Channel2 = "channel2",
@@ -195,6 +184,10 @@ export enum ChannelName {
     Channel4 = "channel4",
     Channel5 = "channel5",
     Channel6 = "channel6",
+}
+
+export enum PrivateChannelName {
+    Error = "error",
 }
 
 // #endregion

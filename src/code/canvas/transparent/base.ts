@@ -1,5 +1,6 @@
-import { Messaging4 } from "../../utilities/messaging/impl.js";
-import { IMessaging4, VoidUnsubscribe } from "../../utilities/messaging/types.js";
+import { Messaging4 } from "../../messaging/impl.js";
+import { IMessaging4 } from "../../messaging/types.js";
+import { VoidUnsubscribe } from "../../types.js";
 import { Canvas } from "../base.js";
 import {
     ITransparentCanvas,

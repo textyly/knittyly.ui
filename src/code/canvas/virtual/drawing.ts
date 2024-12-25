@@ -1,5 +1,5 @@
 import { VirtualCanvas } from "./base.js";
-import { Dot, Line, Link, MousePositionType } from "./types.js";
+import { CanvasSide, Dot, Line, Link } from "./types.js";
 import {
     ITransparentCanvas,
     MouseMoveEvent,
@@ -20,8 +20,7 @@ export class VirtualDrawing extends VirtualCanvas {
     private link?: Link;
 
     private lines: Array<Line>;
-
-    private mousePosition: MousePositionType;
+    private side: CanvasSide;
 
     //#endregion
 
@@ -35,7 +34,7 @@ export class VirtualDrawing extends VirtualCanvas {
         this.dotSpacing = 20;
         this.dots = new Map<string, Dot>;
 
-        this.mousePosition = MousePositionType.BACK;
+        this.side = CanvasSide.Back;
     }
 
     // #region abstract overrides
@@ -89,14 +88,21 @@ export class VirtualDrawing extends VirtualCanvas {
     }
 
     private handleLinkChanged(position: Position): void {
-        if (this.clickedDot) {
-            if (this.link) {
-                super.invokeRemoveLink({ link: this.link });
-            }
-
-            this.link = { id: this.getNextId(), from: this.clickedDot, to: { id: this.getNextId(), x: position.x, y: position.y, radius: this.dotRadius }, type: this.mousePosition };
-            super.invokeDrawLink({ link: this.link });
+        if (!this.clickedDot) {
+            return;
         }
+
+        if (this.link) {
+            super.invokeRemoveLink({ link: this.link });
+        }
+
+        const id = this.getNextId();
+        const from = this.clickedDot;
+        const to = { id: this.getNextId(), x: position.x, y: position.y, radius: this.dotRadius };
+        const side = this.side;
+
+        this.link = { id, from, to, side };
+        super.invokeDrawLink({ link: this.link });
     }
 
     // TODO: extremely bad code, refactor !!!
@@ -112,17 +118,15 @@ export class VirtualDrawing extends VirtualCanvas {
         if (!this.clickedDot) {
             // TODO: check this case when clicking on the same dot multiple times
             this.clickedDot = dot;
-            this.mousePosition = MousePositionType.FRONT;
+            this.side = CanvasSide.Front;
             return;
         }
 
-        const line = { from: this.clickedDot, to: dot, type: this.mousePosition };
+        const line = { from: this.clickedDot, to: dot, side: this.side };
         this.lines.push(line);
         super.invokeDrawLine({ line });
 
-        this.mousePosition = this.mousePosition == MousePositionType.FRONT
-            ? MousePositionType.BACK
-            : MousePositionType.FRONT;
+        this.side = this.side === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
 
         this.clickedDot = dot;
     }
@@ -189,7 +193,7 @@ export class VirtualDrawing extends VirtualCanvas {
         this.lines.forEach((line) => {
             const from = this.dots.get(line.from.id)!; // TODO: what if undefined ???
             const to = this.dots.get(line.to.id)!; // TODO: what if undefined ???
-            lines.push({ from, to, type: line.type });
+            lines.push({ from, to, side: line.side });
         });
 
         return lines;

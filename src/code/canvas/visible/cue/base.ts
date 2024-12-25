@@ -1,18 +1,19 @@
-import { Canvas } from "../base.js";
-import { SvgCanvas } from "../html/svg.js";
-import { SvgDot, SvgLine } from "../html/types.js";
+import { Canvas } from "../../base.js";
+import { SvgCanvas } from "../../html/svg.js";
+import { SvgDot, SvgLine } from "../../html/types.js";
 import {
+    Id,
+    CanvasSide,
     DotHoveredEvent,
     DotUnhoveredEvent,
     DrawLinkEvent,
-    Id,
     IVirtualCanvas,
     RemoveLinkEvent
-} from "../virtual/types.js";
+} from "../../virtual/types.js";
 
 export class CueCanvas extends Canvas {
-    private readonly svgCanvas: SvgCanvas;
-    private readonly virtualCanvas: IVirtualCanvas;
+    protected readonly svgCanvas: SvgCanvas;
+    protected readonly virtualCanvas: IVirtualCanvas;
 
     private readonly dots: Map<Id, SvgDot>;
     private readonly lines: Map<Id, SvgLine>;
@@ -69,8 +70,12 @@ export class CueCanvas extends Canvas {
         const id = event.link.id;
         const from = event.link.from;
         const to = event.link.to;
+        const side = event.link.side;
 
-        const svgLine = this.svgCanvas.drawLine(from, to);
+        const svgLine = side === CanvasSide.Front
+            ? this.svgCanvas.drawLine(from, to)
+            : this.svgCanvas.drawDashLine(from, to);
+
         this.lines.set(id, svgLine);
     }
 
