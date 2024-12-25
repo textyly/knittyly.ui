@@ -2,6 +2,7 @@ import { Messaging6 } from "../../messaging/impl.js";
 import { IMessaging6 } from "../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
 import { Canvas } from "../base.js";
+import { ITransparentCanvas, MouseLeftButtonDownEvent, MouseMoveEvent } from "../transparent/types.js";
 import {
     DotHoveredEvent,
     DotHoveredListener,
@@ -25,8 +26,8 @@ export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
 
     // #endregion
 
-    constructor(width: number, height: number) {
-        super(width, height);
+    constructor(protected transparentCanvas: ITransparentCanvas) {
+        super(transparentCanvas.size.width, transparentCanvas.size.height);
 
         const className = VirtualCanvas.name;
         this.messaging = new Messaging6(className);
@@ -65,9 +66,26 @@ export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
 
     // #endregion
 
+    // #region abstract overrides
+
+    protected override initializeCore(): void {
+        this.subscribe();
+    }
+
+    protected override disposeCore(): void {
+        // do nothing, base class will unsubscribe all listeners
+    }
+
+    // #endregion
+
     // #region abstract
 
     public abstract draw(): void;
+
+    protected abstract handleZoomIn(): void;
+    protected abstract handleZoomOut(): void;
+    protected abstract handleMouseMove(event: MouseMoveEvent): void;
+    protected abstract handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void;
 
     // #endregion
 
@@ -104,6 +122,20 @@ export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
     // #endregion
 
     // #region methods
+
+    private subscribe(): void {
+        const zoomInUn = this.transparentCanvas.onZoomIn(this.handleZoomIn.bind(this));
+        super.registerUn(zoomInUn);
+
+        const zoomOutUn = this.transparentCanvas.onZoomOut(this.handleZoomOut.bind(this));
+        super.registerUn(zoomOutUn);
+
+        const mouseMoveUn = this.transparentCanvas.onMouseMove(this.handleMouseMove.bind(this));
+        super.registerUn(mouseMoveUn);
+
+        const mouseLeftButtonDownUn = this.transparentCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
+        super.registerUn(mouseLeftButtonDownUn);
+    }
 
     // #endregion
 }

@@ -24,8 +24,8 @@ export class VirtualDrawing extends VirtualCanvas {
 
     //#endregion
 
-    constructor(private canvas: ITransparentCanvas) {
-        super(canvas.size.width, canvas.size.height);
+    constructor(canvas: ITransparentCanvas) {
+        super(canvas);
 
         this.nextId = 0;
         this.lines = [];
@@ -37,42 +37,16 @@ export class VirtualDrawing extends VirtualCanvas {
         this.side = CanvasSide.Back;
     }
 
-    // #region abstract overrides
+    // #region overrides
 
-    protected override initializeCore(): void {
-        this.subscribe();
-    }
-
-    protected override disposeCore(): void {
-        // do nothing
-    }
-
-    // #endregion
-
-    // #region events
-
-    private subscribe(): void {
-        const zoomInUn = this.canvas.onZoomIn(this.handleZoomIn.bind(this));
-        super.registerUn(zoomInUn);
-
-        const zoomOutUn = this.canvas.onZoomOut(this.handleZoomOut.bind(this));
-        super.registerUn(zoomOutUn);
-
-        const mouseMoveUn = this.canvas.onMouseMove(this.handleMouseMove.bind(this));
-        super.registerUn(mouseMoveUn);
-
-        const mouseLeftButtonDownUn = this.canvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
-        super.registerUn(mouseLeftButtonDownUn);
-    }
-
-    private handleMouseMove(event: MouseMoveEvent) {
+    protected handleMouseMove(event: MouseMoveEvent) {
         const position = event.position;
         this.handleDotChanged(position);
         this.handleLinkChanged(position);
     }
 
     // TODO: ugly code!!!
-    private handleDotChanged(position: Position): void {
+    protected handleDotChanged(position: Position): void {
         const dot = this.getDot(position.x, position.y);
         if (dot) {
             if (dot.id !== this.hoveredDot?.id && dot.id !== this.hoveredDot?.originalDot?.id) {
@@ -87,7 +61,7 @@ export class VirtualDrawing extends VirtualCanvas {
         }
     }
 
-    private handleLinkChanged(position: Position): void {
+    protected handleLinkChanged(position: Position): void {
         if (!this.clickedDot) {
             return;
         }
@@ -106,7 +80,7 @@ export class VirtualDrawing extends VirtualCanvas {
     }
 
     // TODO: extremely bad code, refactor !!!
-    private handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
+    protected handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
         const position = event.position;
         const dot = this.getDot(position.x, position.y);
 
@@ -131,13 +105,13 @@ export class VirtualDrawing extends VirtualCanvas {
         this.clickedDot = dot;
     }
 
-    private handleZoomIn(): void {
+    protected handleZoomIn(): void {
         // TODO: width and height calculations are not correct here
-        const width = this.canvas.size.width + 2;
-        const height = this.canvas.size.height + 2;
+        const width = super.size.width + 2;
+        const height = super.size.height + 2;
 
         // set a new size for all headless canvases
-        this.canvas.size = { width, height };
+        super.size = { width, height };
 
         this.dotSpacing += 2;
         this.dotRadius += 0.2;
@@ -146,13 +120,13 @@ export class VirtualDrawing extends VirtualCanvas {
         this.draw();
     }
 
-    private handleZoomOut(): void {
+    protected handleZoomOut(): void {
         // TODO: width and height calculations are not correct here
-        const width = this.canvas.size.width + 2;
-        const height = this.canvas.size.height + 2;
+        const width = super.size.width + 2;
+        const height = super.size.height + 2;
 
         // set a new size for all headless canvases
-        this.canvas.size = { width, height };
+        super.size = { width, height };
 
         this.dotSpacing -= 2;
         this.dotRadius -= 0.2;
@@ -188,8 +162,8 @@ export class VirtualDrawing extends VirtualCanvas {
     private createDots(): Map<string, Dot> {
         const dots = new Map<string, Dot>();
 
-        for (let y = this.dotSpacing; y < this.canvas.size.height; y += this.dotSpacing) {
-            for (let x = this.dotSpacing; x < this.canvas.size.width; x += this.dotSpacing) {
+        for (let y = this.dotSpacing; y < super.size.height; y += this.dotSpacing) {
+            for (let x = this.dotSpacing; x < super.size.width; x += this.dotSpacing) {
                 const id = this.getNextId();
                 const dot = { id, x, y, radius: this.dotRadius };
                 dots.set(id, dot);
