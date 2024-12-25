@@ -169,6 +169,21 @@ export interface IMessaging6<Data1, Data2, Data3, Data4, Data5, Data6> extends I
     sendToChannel6(data: Data6): void;
 }
 
+export interface IMessaging7<Data1, Data2, Data3, Data4, Data5, Data6, Data7> extends IMessaging6<Data1, Data2, Data3, Data4, Data5, Data6> {
+
+    /**
+     * 
+     * @param listener 
+     */
+    listenOnChannel7(listener: Listener<Data7>): VoidUnsubscribe;
+
+    /**
+     * 
+     * @param data 
+     */
+    sendToChannel7(data: Data7): void;
+}
+
 // #endregion
 
 // #region enums
@@ -184,6 +199,7 @@ export enum PublicChannelName {
     Channel4 = "channel4",
     Channel5 = "channel5",
     Channel6 = "channel6",
+    Channel7 = "channel7",
 }
 
 export enum PrivateChannelName {

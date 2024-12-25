@@ -166,11 +166,22 @@ export class VirtualDrawing extends VirtualCanvas {
     // #region methods
 
     public draw(): void {
-        this.dots = this.createDots();
-        this.lines = this.createLines();
+        // clear the canvas
+        super.invokeRedraw();
 
-        const drawGridEvent = { dots: [...this.dots.values()], lines: [...this.lines.values()] };
-        super.invokeDrawGrid(drawGridEvent);
+        // draw dots
+        this.dots = this.createDots();
+        this.dots.forEach((dot) => {
+            const dotEvent = { dot };
+            super.invokeDrawDot(dotEvent);
+        });
+
+        //draw lines
+        this.lines = this.createLines();
+        this.lines.forEach((line) => {
+            const lineEvent = { line };
+            super.invokeDrawLine(lineEvent);
+        });
     }
 
 
@@ -180,7 +191,8 @@ export class VirtualDrawing extends VirtualCanvas {
         for (let y = this.dotSpacing; y < this.canvas.size.height; y += this.dotSpacing) {
             for (let x = this.dotSpacing; x < this.canvas.size.width; x += this.dotSpacing) {
                 const id = this.getNextId();
-                dots.set(id, { id, x, y, radius: this.dotRadius });
+                const dot = { id, x, y, radius: this.dotRadius };
+                dots.set(id, dot);
             }
         }
 
@@ -193,7 +205,8 @@ export class VirtualDrawing extends VirtualCanvas {
         this.lines.forEach((line) => {
             const from = this.dots.get(line.from.id)!; // TODO: what if undefined ???
             const to = this.dots.get(line.to.id)!; // TODO: what if undefined ???
-            lines.push({ from, to, side: line.side });
+            const l = { from, to, side: line.side };
+            lines.push(l);
         });
 
         return lines;

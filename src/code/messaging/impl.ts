@@ -9,6 +9,7 @@ import {
     IMessaging4,
     IMessaging5,
     IMessaging6,
+    IMessaging7,
 } from "./types.js";
 
 export class Messaging0 extends Messaging implements IMessaging0 {
@@ -116,7 +117,7 @@ export class Messaging5<Data1, Data2, Data3, Data4, Data5> extends Messaging4<Da
 export class Messaging6<Data1, Data2, Data3, Data4, Data5, Data6> extends Messaging5<Data1, Data2, Data3, Data4, Data5> implements IMessaging6<Data1, Data2, Data3, Data4, Data5, Data6> {
     private readonly channel6 = PublicChannelName.Channel6;
 
-    constructor( name: string) {
+    constructor(name: string) {
         super(name);
         super.create(this.channel6);
     }
@@ -127,5 +128,22 @@ export class Messaging6<Data1, Data2, Data3, Data4, Data5, Data6> extends Messag
 
     public sendToChannel6(data: Data6): void {
         super.send(this.channel6, data);
+    }
+}
+
+export class Messaging7<Data1, Data2, Data3, Data4, Data5, Data6, Data7> extends Messaging6<Data1, Data2, Data3, Data4, Data5, Data6> implements IMessaging7<Data1, Data2, Data3, Data4, Data5, Data6, Data7> {
+    private readonly channel7 = PublicChannelName.Channel7;
+
+    constructor(name: string) {
+        super(name);
+        super.create(this.channel7);
+    }
+
+    public listenOnChannel7(listener: Listener<Data7>): VoidUnsubscribe {
+        return super.on(this.channel7, listener);
+    }
+
+    public sendToChannel7(data: Data7): void {
+        super.send(this.channel7, data);
     }
 }

@@ -1,5 +1,5 @@
 import { ICanvas } from "../types.js";
-import { Listener, VoidUnsubscribe } from "../../types.js";
+import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 
 // #region types
 
@@ -9,8 +9,8 @@ export type Dot = { id: Id, x: number, y: number, radius: number };
 export type Line = { from: Dot, to: Dot, side: CanvasSide };
 export type Link = { id: Id, from: Dot, to: Dot, side: CanvasSide };
 
-export type DrawGridEvent = { dots: Array<Dot>, lines: Array<Line> };
-export type DrawGridListener = Listener<DrawGridEvent>;
+export type DrawDotEvent = { dot: Dot };
+export type DrawDotListener = Listener<DrawDotEvent>;
 
 export type DrawLineEvent = { line: Line };
 export type DrawLineListener = Listener<DrawLineEvent>;
@@ -32,7 +32,8 @@ export type DotUnhoveredListener = Listener<DotUnhoveredEvent>;
 // #region interfaces
 
 export interface IVirtualCanvas extends ICanvas {
-    onDrawGrid(listener: DrawGridListener): VoidUnsubscribe;
+    onRedraw(listener: VoidListener): VoidUnsubscribe;
+    onDrawDot(listener: DrawDotListener): VoidUnsubscribe;
     onDrawLine(listener: DrawLineListener): VoidUnsubscribe;
     onDrawLink(listener: DrawLinkListener): VoidUnsubscribe;
     onRemoveLink(listener: RemoveLinkListener): VoidUnsubscribe;

@@ -1,6 +1,11 @@
 import { Canvas } from "../../base.js";
 import { RasterCanvas } from "../../html/raster.js";
-import { DrawGridEvent, DrawLineEvent, IVirtualCanvas, Line } from "../../virtual/types.js";
+import {
+    Line,
+    DrawDotEvent,
+    DrawLineEvent,
+    IVirtualCanvas
+} from "../../virtual/types.js";
 
 export abstract class DotCanvas extends Canvas {
     protected readonly rasterCanvas: RasterCanvas;
@@ -14,7 +19,10 @@ export abstract class DotCanvas extends Canvas {
     }
 
     override initializeCore(): void {
-        const drawGridUn = this.virtualCanvas.onDrawGrid(this.handleDrawGrid.bind(this));
+        const redrawUn = this.virtualCanvas.onRedraw(this.handleRedraw.bind(this));
+        super.registerUn(redrawUn);
+
+        const drawGridUn = this.virtualCanvas.onDrawDot(this.handleDrawDot.bind(this));
         super.registerUn(drawGridUn);
 
         const drawLineUn = this.virtualCanvas.onDrawLine(this.handleDrawLine.bind(this));
@@ -27,15 +35,13 @@ export abstract class DotCanvas extends Canvas {
 
     abstract drawLine(line: Line): void;
 
-    private handleDrawGrid(event: DrawGridEvent): void {
-        // this handler might be drawing intensive, which means it might impact the CPU usage and smooth visualization
+    private handleRedraw(): void {
         this.rasterCanvas.clear();
+    }
 
-        const dots = event.dots;
-        dots.forEach((dot) => this.rasterCanvas.drawDot(dot));
-
-        const lines = event.lines;
-        lines.forEach((line) => this.drawLine(line));
+    private handleDrawDot(event: DrawDotEvent): void {
+        const dot = event.dot;
+        this.rasterCanvas.drawDot(dot);
     }
 
     private handleDrawLine(event: DrawLineEvent): void {
