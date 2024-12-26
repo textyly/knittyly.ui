@@ -13,8 +13,11 @@ export type MouseMoveListener = Listener<MouseMoveEvent>
 export type MouseLeftButtonDownEvent = PositionEvent;
 export type MouseLeftButtonDownListener = Listener<MouseLeftButtonDownEvent>;
 
-export type ZoomInListener = VoidListener;
-export type ZoomOutListener = VoidListener;
+export type ZoomInEvent = {};
+export type ZoomInListener = Listener<ZoomInEvent>;
+
+export type ZoomOutEvent = {};
+export type ZoomOutListener = Listener<ZoomOutEvent>;
 
 export type MouseEventHandler = (event: MouseEvent) => void
 export type WheelChangeHandler = (event: WheelEvent) => void;

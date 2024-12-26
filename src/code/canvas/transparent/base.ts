@@ -6,18 +6,19 @@ import {
     ITransparentCanvas,
     MouseLeftButtonDownEvent,
     MouseMoveEvent,
-    SizeChangeEvent,
     ZoomInListener,
     ZoomOutListener,
     MouseMoveListener,
-    MouseLeftButtonDownListener
+    MouseLeftButtonDownListener,
+    ZoomInEvent,
+    ZoomOutEvent
 } from "./types.js";
 
 
 export abstract class TransparentCanvas extends Canvas implements ITransparentCanvas {
     // #region fields
 
-    private readonly messaging: IMessaging4<void, MouseMoveEvent, MouseLeftButtonDownEvent, SizeChangeEvent>;
+    private readonly messaging: IMessaging4<ZoomInEvent, ZoomOutEvent, MouseMoveEvent, MouseLeftButtonDownEvent>;
 
     //#endregion
 
@@ -32,19 +33,19 @@ export abstract class TransparentCanvas extends Canvas implements ITransparentCa
     // #region interface
 
     public onZoomIn(listener: ZoomInListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel0(listener);
-    }
-
-    public onZoomOut(listener: ZoomOutListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel1(listener);
     }
 
-    public onMouseMove(listener: MouseMoveListener): VoidUnsubscribe {
+    public onZoomOut(listener: ZoomOutListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel2(listener);
     }
 
-    public onMouseLeftButtonDown(listener: MouseLeftButtonDownListener): VoidUnsubscribe {
+    public onMouseMove(listener: MouseMoveListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel3(listener);
+    }
+
+    public onMouseLeftButtonDown(listener: MouseLeftButtonDownListener): VoidUnsubscribe {
+        return this.messaging.listenOnChannel4(listener);
     }
 
     // #endregion
@@ -59,19 +60,19 @@ export abstract class TransparentCanvas extends Canvas implements ITransparentCa
     // #region events
 
     protected invokeZoomIn(): void {
-        this.messaging.sendToChannel0();
+        this.messaging.sendToChannel1({});
     }
 
     protected invokeZoomOut(): void {
-        this.messaging.sendToChannel1();
+        this.messaging.sendToChannel2({});
     }
 
     protected invokeMouseMove(event: MouseMoveEvent): void {
-        this.messaging.sendToChannel2(event);
+        this.messaging.sendToChannel3(event);
     }
 
     protected invokeMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
-        this.messaging.sendToChannel3(event);
+        this.messaging.sendToChannel4(event);
     }
 
     // #endregion

@@ -122,8 +122,8 @@ export class VirtualDrawing extends VirtualCanvas {
 
     protected handleZoomOut(): void {
         // TODO: width and height calculations are not correct here
-        const width = super.size.width + 2;
-        const height = super.size.height + 2;
+        const width = super.size.width - 2;
+        const height = super.size.height - 2;
 
         // set a new size for all headless canvases
         super.size = { width, height };
