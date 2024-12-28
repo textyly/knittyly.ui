@@ -1,207 +1,151 @@
 import { VirtualCanvas } from "./base.js";
-import { CanvasSide, Dot, Line, Link } from "./types.js";
+import { DotVirtualCanvas } from "./dot.js";
+import { CueVirtualCanvas } from "./cue.js";
+import { ITransparentCanvas, MouseMoveEvent } from "../transparent/types.js";
 import {
-    ITransparentCanvas,
-    MouseMoveEvent,
-    MouseLeftButtonDownEvent,
-    Position,
-} from "../transparent/types.js";
+    DrawDotEvent,
+    DrawLineEvent,
+    DrawLinkEvent,
+    HoverDotEvent,
+    RemoveLinkEvent,
+    UnhoverDotEvent
+} from "./types.js";
 
 export class VirtualDrawing extends VirtualCanvas {
     // #region fields 
-    private dots: Map<string, Dot>;
 
-    private dotRadius: number;
-    private dotSpacing: number;
-    private hoveredDot?: Dot & { originalDot: Dot }; // TODO: ugly!!!
-    private clickedDot?: Dot;
-
-    private nextId: number;
-    private link?: Link;
-
-    private lines: Array<Line>;
-    private side: CanvasSide;
+    private transparentCanvas: ITransparentCanvas
+    private dotVirtualCanvas: DotVirtualCanvas;
+    private cueVirtualCanvas: CueVirtualCanvas;
 
     //#endregion
 
-    constructor(canvas: ITransparentCanvas) {
-        super(canvas);
+    constructor(transparentCanvas: ITransparentCanvas) {
+        super(transparentCanvas.size.width, transparentCanvas.size.height);
 
-        this.nextId = 0;
-        this.lines = [];
-
-        this.dotRadius = 2;
-        this.dotSpacing = 20;
-        this.dots = new Map<string, Dot>;
-
-        this.side = CanvasSide.Back;
+        this.transparentCanvas = transparentCanvas;
+        this.dotVirtualCanvas = new DotVirtualCanvas(super.size.width, super.size.height);
+        this.cueVirtualCanvas = new CueVirtualCanvas(this.dotVirtualCanvas);
     }
+
+    // #region interface
+
+    public draw(): void {
+        super.invokeRedraw();
+        this.dotVirtualCanvas.draw();
+        this.cueVirtualCanvas.draw();
+    }
+
+    // #endregion 
 
     // #region overrides
 
-    protected handleMouseMove(event: MouseMoveEvent) {
-        const position = event.position;
-        this.handleDotChanged(position);
-        this.handleLinkChanged(position);
+    protected override initializeCore(): void {
+        this.dotVirtualCanvas.initialize();
+        this.cueVirtualCanvas.initialize();
+        this.subscribe();
     }
 
-    // TODO: ugly code!!!
-    protected handleDotChanged(position: Position): void {
-        const dot = this.getDot(position.x, position.y);
-        if (dot) {
-            if (dot.id !== this.hoveredDot?.id && dot.id !== this.hoveredDot?.originalDot?.id) {
-                this.hoveredDot = { x: dot.x, y: dot.y, radius: dot.radius + 2, id: this.getNextId(), originalDot: dot };
-                const dotHoveredEvent = { dot: this.hoveredDot };
-                super.invokeDotHovered(dotHoveredEvent);
-            }
-        } else if (this.hoveredDot) {
-            const dotUnhoveredEvent = { dot: this.hoveredDot };
-            super.invokeDotUnhovered(dotUnhoveredEvent);
-            this.hoveredDot = undefined;
-        }
+    protected override disposeCore(): void {
+        this.unsubscribe();
+        this.cueVirtualCanvas.dispose();
+        this.dotVirtualCanvas.dispose();
     }
 
-    protected handleLinkChanged(position: Position): void {
-        if (!this.clickedDot) {
-            return;
-        }
+    // #endregion
 
-        if (this.link) {
-            super.invokeRemoveLink({ link: this.link });
-        }
+    // #region events
 
-        const id = this.getNextId();
-        const from = this.clickedDot;
-        const to = { id: this.getNextId(), x: position.x, y: position.y, radius: this.dotRadius };
-        const side = this.side;
-
-        this.link = { id, from, to, side };
-        super.invokeDrawLink({ link: this.link });
+    private handleZoomIn(): void {
+        super.invokeRedraw();
+        this.dotVirtualCanvas.invokeZoomIn();
+        this.cueVirtualCanvas.invokeZoomIn();
     }
 
-    // TODO: extremely bad code, refactor !!!
-    protected handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
-        const position = event.position;
-        const dot = this.getDot(position.x, position.y);
+    private handleZoomOut(): void {
+        super.invokeRedraw();
+        this.dotVirtualCanvas.invokeZoomOut();
+        this.cueVirtualCanvas.invokeZoomOut();
+    }
 
-        if (!dot) {
-            // don't care
-            return;
-        }
+    private handleMouseMove(event: MouseMoveEvent): void {
+        this.dotVirtualCanvas.invokeMouseMove(event);
+        this.cueVirtualCanvas.invokeMouseMove(event);
+    }
 
-        if (!this.clickedDot) {
-            // TODO: check this case when clicking on the same dot multiple times
-            this.clickedDot = dot;
-            this.side = CanvasSide.Front;
-            return;
-        }
+    private handleMouseLeftButtonDown(event: MouseMoveEvent): void {
+        this.cueVirtualCanvas.invokeMouseLeftButtonDown(event);
+        this.dotVirtualCanvas.invokeMouseLeftButtonDown(event);
+    }
 
-        const line = { from: this.clickedDot, to: dot, side: this.side };
-        this.lines.push(line);
+    private handleDrawDot(event: DrawDotEvent): void {
+        const dot = event.dot;
+        super.invokeDrawDot({ dot });
+    }
+
+    private handleDrawLine(event: DrawLineEvent): void {
+        const line = event.line;
         super.invokeDrawLine({ line });
-
-        this.side = this.side === CanvasSide.Front ? CanvasSide.Back : CanvasSide.Front;
-
-        this.clickedDot = dot;
     }
 
-    protected handleZoomIn(): void {
-        // TODO: width and height calculations are not correct here
-        const width = super.size.width + 2;
-        const height = super.size.height + 2;
-
-        // set a new size for all headless canvases
-        super.size = { width, height };
-
-        this.dotSpacing += 2;
-        this.dotRadius += 0.2;
-
-        // inform all visible canvases that size, dots and line has been changed
-        this.draw();
+    private handleDrawLink(event: DrawLinkEvent): void {
+        const link = event.link;
+        super.invokeDrawLink({ link });
     }
 
-    protected handleZoomOut(): void {
-        // TODO: width and height calculations are not correct here
-        const width = super.size.width - 2;
-        const height = super.size.height - 2;
+    private handleRemoveLink(event: RemoveLinkEvent): void {
+        const link = event.link;
+        super.invokeRemoveLink({ link });
+    }
 
-        // set a new size for all headless canvases
-        super.size = { width, height };
+    private handleHoverDot(event: HoverDotEvent): void {
+        const dot = event.dot;
+        super.invokeHoverDot({ dot });
+    }
 
-        this.dotSpacing -= 2;
-        this.dotRadius -= 0.2;
-
-        // inform all visible canvases that size, dots and lines has been changed
-        this.draw();
+    private handleUnhoverDot(event: UnhoverDotEvent): void {
+        const dot = event.dot;
+        super.invokeUnhoverDot({ dot });
     }
 
     // #endregion
 
     // #region methods
 
-    public draw(): void {
-        // clear the canvas
-        super.invokeRedraw();
+    private subscribe(): void {
+        const zoomInUn = this.transparentCanvas.onZoomIn(this.handleZoomIn.bind(this));
+        super.registerUn(zoomInUn);
 
-        // draw dots
-        this.dots = this.createDots();
-        this.dots.forEach((dot) => {
-            const dotEvent = { dot };
-            super.invokeDrawDot(dotEvent);
-        });
+        const zoomOutUn = this.transparentCanvas.onZoomOut(this.handleZoomOut.bind(this));
+        super.registerUn(zoomOutUn);
 
-        //draw lines
-        this.lines = this.createLines();
-        this.lines.forEach((line) => {
-            const lineEvent = { line };
-            super.invokeDrawLine(lineEvent);
-        });
+        const mouseMoveUn = this.transparentCanvas.onMouseMove(this.handleMouseMove.bind(this));
+        super.registerUn(mouseMoveUn);
+
+        const mouseLeftButtonDownUn = this.transparentCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
+        super.registerUn(mouseLeftButtonDownUn);
+
+        const drawDotUn = this.dotVirtualCanvas.onDrawDot(this.handleDrawDot.bind(this));
+        super.registerUn(drawDotUn);
+
+        const drawLineUn = this.cueVirtualCanvas.onDrawLine(this.handleDrawLine.bind(this));
+        super.registerUn(drawLineUn);
+
+        const drawLinkUn = this.cueVirtualCanvas.onDrawLink(this.handleDrawLink.bind(this));
+        super.registerUn(drawLinkUn);
+
+        const removeLinkUn = this.cueVirtualCanvas.onRemoveLink(this.handleRemoveLink.bind(this));
+        super.registerUn(removeLinkUn);
+
+        const hoverDotUn = this.dotVirtualCanvas.onHoverDot(this.handleHoverDot.bind(this));
+        super.registerUn(hoverDotUn);
+
+        const unhoverDotUn = this.dotVirtualCanvas.onUnhoverDot(this.handleUnhoverDot.bind(this));
+        super.registerUn(unhoverDotUn);
     }
 
-
-    private createDots(): Map<string, Dot> {
-        const dots = new Map<string, Dot>();
-
-        for (let y = this.dotSpacing; y < super.size.height; y += this.dotSpacing) {
-            for (let x = this.dotSpacing; x < super.size.width; x += this.dotSpacing) {
-                const id = this.getNextId();
-                const dot = { id, x, y, radius: this.dotRadius };
-                dots.set(id, dot);
-            }
-        }
-
-        return dots;
-    }
-
-    private createLines(): Array<Line> {
-        const lines = new Array<Line>();
-
-        this.lines.forEach((line) => {
-            const from = this.dots.get(line.from.id)!; // TODO: what if undefined ???
-            const to = this.dots.get(line.to.id)!; // TODO: what if undefined ???
-            const l = { from, to, side: line.side };
-            lines.push(l);
-        });
-
-        return lines;
-    }
-
-    // TODO: try to find a better algorithm
-    private getDot(x: number, y: number): Dot | undefined {
-        for (const dotKvp of this.dots) {
-            const dot = dotKvp[1];
-            const distance = Math.sqrt((x - dot.x) ** 2 + (y - dot.y) ** 2);
-            let isInside = distance <= dot.radius;
-            if (isInside) {
-                return dot;
-            }
-        }
-    }
-
-    private getNextId(): string {
-        const id = ++this.nextId;
-        const strId = id.toString();
-        return strId;
+    private unsubscribe(): void {
+        // base class will unsubscribe
     }
 
     // #endregion

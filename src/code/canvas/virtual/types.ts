@@ -21,11 +21,11 @@ export type DrawLinkListener = Listener<DrawLinkEvent>;
 export type RemoveLinkEvent = { link: Link };
 export type RemoveLinkListener = Listener<RemoveLinkEvent>;
 
-export type DotHoveredEvent = { dot: Dot };
-export type DotHoveredListener = Listener<DotHoveredEvent>;
+export type HoverDotEvent = { dot: Dot };
+export type HoverDotListener = Listener<HoverDotEvent>;
 
-export type DotUnhoveredEvent = { dot: Dot };
-export type DotUnhoveredListener = Listener<DotUnhoveredEvent>;
+export type UnhoverDotEvent = { dot: Dot };
+export type UnhoverDotListener = Listener<UnhoverDotEvent>;
 
 // #endregion
 
@@ -37,8 +37,8 @@ export interface IVirtualCanvas extends ICanvas {
     onDrawLine(listener: DrawLineListener): VoidUnsubscribe;
     onDrawLink(listener: DrawLinkListener): VoidUnsubscribe;
     onRemoveLink(listener: RemoveLinkListener): VoidUnsubscribe;
-    onDotHovered(listener: DotHoveredListener): VoidUnsubscribe;
-    onDotUnhovered(listener: DotUnhoveredListener): VoidUnsubscribe;
+    onHoverDot(listener: HoverDotListener): VoidUnsubscribe;
+    onUnhoverDot(listener: UnhoverDotListener): VoidUnsubscribe;
 
     draw(): void;
 }

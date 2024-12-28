@@ -4,8 +4,8 @@ import { SvgDot, SvgLine } from "../../html/types.js";
 import {
     Id,
     CanvasSide,
-    DotHoveredEvent,
-    DotUnhoveredEvent,
+    HoverDotEvent,
+    UnhoverDotEvent,
     DrawLinkEvent,
     IVirtualCanvas,
     RemoveLinkEvent
@@ -35,10 +35,10 @@ export class CueCanvas extends Canvas {
         const removeLinkUn = this.virtualCanvas.onRemoveLink(this.handleRemoveLink.bind(this));
         super.registerUn(removeLinkUn);
 
-        const dotHoveredUn = this.virtualCanvas.onDotHovered(this.handleDotHovered.bind(this));
+        const dotHoveredUn = this.virtualCanvas.onHoverDot(this.handleDotHovered.bind(this));
         super.registerUn(dotHoveredUn);
 
-        const dotUnhoveredUn = this.virtualCanvas.onDotUnhovered(this.handleDotUnhovered.bind(this));
+        const dotUnhoveredUn = this.virtualCanvas.onUnhoverDot(this.handleDotUnhovered.bind(this));
         super.registerUn(dotUnhoveredUn);
     }
 
@@ -49,7 +49,7 @@ export class CueCanvas extends Canvas {
         // base class will unsubscribe handleDrawLink, handleRemoveLink, handleDotHovered and handleDotUnhovered
     }
 
-    private handleDotHovered(event: DotHoveredEvent): void {
+    private handleDotHovered(event: HoverDotEvent): void {
         const dot = event.dot;
         const id = dot.id;
 
@@ -57,7 +57,7 @@ export class CueCanvas extends Canvas {
         this.dots.set(id, svgDot);
     }
 
-    private handleDotUnhovered(event: DotUnhoveredEvent): void {
+    private handleDotUnhovered(event: UnhoverDotEvent): void {
         const dotId = event.dot.id;
         if (this.dots.has(dotId)) {
             const dot = this.dots.get(dotId)!;

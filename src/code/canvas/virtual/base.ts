@@ -1,13 +1,12 @@
+import { Canvas } from "../base.js";
 import { Messaging6 } from "../../messaging/impl.js";
 import { IMessaging6 } from "../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
-import { Canvas } from "../base.js";
-import { ITransparentCanvas, MouseLeftButtonDownEvent, MouseMoveEvent } from "../transparent/types.js";
 import {
-    DotHoveredEvent,
-    DotHoveredListener,
-    DotUnhoveredEvent,
-    DotUnhoveredListener,
+    HoverDotEvent,
+    HoverDotListener,
+    UnhoverDotEvent,
+    UnhoverDotListener,
     IVirtualCanvas,
     DrawLineEvent,
     DrawLineListener,
@@ -22,12 +21,12 @@ import {
 export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
     // #region fields
 
-    private readonly messaging: IMessaging6<DrawDotEvent, DrawLineEvent, DrawLinkEvent, RemoveLinkEvent, DotHoveredEvent, DotUnhoveredEvent>;
+    private readonly messaging: IMessaging6<DrawDotEvent, DrawLineEvent, DrawLinkEvent, RemoveLinkEvent, HoverDotEvent, UnhoverDotEvent>;
 
     // #endregion
 
-    constructor(protected transparentCanvas: ITransparentCanvas) {
-        super(transparentCanvas.size.width, transparentCanvas.size.height);
+    constructor(width: number, height: number) {
+        super(width, height);
 
         const className = VirtualCanvas.name;
         this.messaging = new Messaging6(className);
@@ -56,36 +55,18 @@ export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
         return this.messaging.listenOnChannel4(listener);
     }
 
-    public onDotHovered(listener: DotHoveredListener): VoidUnsubscribe {
+    public onHoverDot(listener: HoverDotListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel5(listener);
     }
 
-    public onDotUnhovered(listener: DotUnhoveredListener): VoidUnsubscribe {
+    public onUnhoverDot(listener: UnhoverDotListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel6(listener);
     }
-
-    // #endregion
-
-    // #region abstract overrides
-
-    protected override initializeCore(): void {
-        this.subscribe();
-    }
-
-    protected override disposeCore(): void {
-        // do nothing, base class will unsubscribe all listeners
-    }
-
-    // #endregion
-
     // #region abstract
 
     public abstract draw(): void;
 
-    protected abstract handleZoomIn(): void;
-    protected abstract handleZoomOut(): void;
-    protected abstract handleMouseMove(event: MouseMoveEvent): void;
-    protected abstract handleMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void;
+    // #endregion
 
     // #endregion
 
@@ -111,31 +92,17 @@ export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
         this.messaging.sendToChannel4(event);
     }
 
-    protected invokeDotHovered(event: DotHoveredEvent): void {
+    protected invokeHoverDot(event: HoverDotEvent): void {
         this.messaging.sendToChannel5(event);
     }
 
-    protected invokeDotUnhovered(event: DotUnhoveredEvent): void {
+    protected invokeUnhoverDot(event: UnhoverDotEvent): void {
         this.messaging.sendToChannel6(event);
     }
 
     // #endregion
 
     // #region methods
-
-    private subscribe(): void {
-        const zoomInUn = this.transparentCanvas.onZoomIn(this.handleZoomIn.bind(this));
-        super.registerUn(zoomInUn);
-
-        const zoomOutUn = this.transparentCanvas.onZoomOut(this.handleZoomOut.bind(this));
-        super.registerUn(zoomOutUn);
-
-        const mouseMoveUn = this.transparentCanvas.onMouseMove(this.handleMouseMove.bind(this));
-        super.registerUn(mouseMoveUn);
-
-        const mouseLeftButtonDownUn = this.transparentCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
-        super.registerUn(mouseLeftButtonDownUn);
-    }
 
     // #endregion
 }

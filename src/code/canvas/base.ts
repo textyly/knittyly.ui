@@ -1,9 +1,9 @@
+import { ICanvas, Size } from "./types.js";
 import { Messaging1 } from "../messaging/impl.js";
 import { IMessaging1 } from "../messaging/types.js";
 import { VoidUnsubscribe } from "../types.js";
 import { SizeValidator } from "../validators/canvas/size.js";
 import { SizeChangeEvent, SizeChangeListener } from "./transparent/types.js";
-import { ICanvas, Size } from "./types.js";
 
 export abstract class Canvas implements ICanvas {
     // #region fields
