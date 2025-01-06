@@ -1,5 +1,6 @@
 import { Canvas } from "../../base.js";
-import { RasterCanvas } from "../../html/raster.js";
+import { RasterCanvas } from "../../html/raster/raster.js";
+import { Size } from "../../types.js";
 import {
     Line,
     DrawDotEvent,
@@ -27,6 +28,9 @@ export abstract class DotCanvas extends Canvas {
 
         const drawLineUn = this.virtualCanvas.onDrawLine(this.handleDrawLine.bind(this));
         super.registerUn(drawLineUn);
+
+        const sizeChangedUn = this.virtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        super.registerUn(sizeChangedUn);
     }
 
     override disposeCore(): void {
@@ -47,5 +51,9 @@ export abstract class DotCanvas extends Canvas {
     private handleDrawLine(event: DrawLineEvent): void {
         const line = event.line;
         this.drawLine(line);
+    }
+
+    private handleSizeChange(size: Size): void {
+        this.rasterCanvas.size = size;
     }
 }

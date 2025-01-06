@@ -1,35 +1,36 @@
 import { VirtualCanvas } from "./base.js";
-import { DotVirtualCanvas } from "./dot.js";
+import { VirtualDotCanvas } from "./dot.js";
 import { CanvasSide, Line, Link } from "./types.js";
+import { IdGenerator } from "../../utilities/generator.js";
 import { MouseMoveEvent, MouseLeftButtonDownEvent } from "../transparent/types.js";
 
-export class CueVirtualCanvas extends VirtualCanvas {
+export class VirtualCueCanvas extends VirtualCanvas {
     // #region fields
 
-    private dotVirtualCanvas: DotVirtualCanvas;
+    private dotVirtualCanvas: VirtualDotCanvas;
 
     private link?: Link;
     private lines: Array<Line>;
     private side: CanvasSide;
 
-    private nextLinkId: number;
+    private idGenerator: IdGenerator;
 
     // #endregion
 
-    constructor(dotVirtualCanvas: DotVirtualCanvas) {
-        super(dotVirtualCanvas.size.width, dotVirtualCanvas.size.height);
+    constructor(virtualDotCanvas: VirtualDotCanvas) {
+        super(virtualDotCanvas.size.width, virtualDotCanvas.size.height);
 
-        this.dotVirtualCanvas = dotVirtualCanvas;
+        this.dotVirtualCanvas = virtualDotCanvas;
 
         this.lines = [];
         this.side = CanvasSide.Back;
 
-        this.nextLinkId = 0;
+        this.idGenerator = new IdGenerator();
     }
     // #region interface 
 
     public draw(): void {
-        this.nextLinkId = 0;
+        this.idGenerator.reset();
 
         this.lines = this.createLines();
 
@@ -59,7 +60,7 @@ export class CueVirtualCanvas extends VirtualCanvas {
             super.invokeRemoveLink({ link: this.link });
         }
 
-        const id = this.getNextLinkId();
+        const id = this.idGenerator.next();
         const from = clickedDot;
         const to = { id, x: position.x, y: position.y, radius: clickedDot.radius };
         const side = this.side;
@@ -115,12 +116,6 @@ export class CueVirtualCanvas extends VirtualCanvas {
         });
 
         return lines;
-    }
-
-    private getNextLinkId(): string {
-        const id = ++this.nextLinkId;
-        const strId = id.toString();
-        return strId;
     }
 
     // #endregion

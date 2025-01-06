@@ -7,6 +7,7 @@ import {
     MouseMoveEvent,
     Position
 } from "./types.js";
+import { Size } from "../types.js";
 
 export class UserInputThrottler extends TransparentCanvas {
 
@@ -21,8 +22,8 @@ export class UserInputThrottler extends TransparentCanvas {
 
     // #endregion
 
-    constructor(private canvas: ITransparentCanvas) {
-        super(canvas.size.width, canvas.size.height);
+    constructor(private transparentCanvas: ITransparentCanvas) {
+        super(transparentCanvas.size.width, transparentCanvas.size.height);
 
         this.groupedEvents = [];
 
@@ -35,17 +36,20 @@ export class UserInputThrottler extends TransparentCanvas {
     // #region abstract overrides 
 
     protected override initializeCore(): void {
-        const zoomInUn = this.canvas.onZoomIn(this.handleZoomIn.bind(this));
+        const zoomInUn = this.transparentCanvas.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(zoomInUn);
 
-        const zoomOutUn = this.canvas.onZoomOut(this.handleZoomOut.bind(this));
+        const zoomOutUn = this.transparentCanvas.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
 
-        const mouseMoveUn = this.canvas.onMouseMove(this.handleMouseMove.bind(this));
+        const mouseMoveUn = this.transparentCanvas.onMouseMove(this.handleMouseMove.bind(this));
         super.registerUn(mouseMoveUn);
 
-        const mouseLeftButtonDown = this.canvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
+        const mouseLeftButtonDown = this.transparentCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
         super.registerUn(mouseLeftButtonDown);
+
+        const sizeChangedUn = super.onSizeChange(this.handlesizeChange.bind(this));
+        super.registerUn(sizeChangedUn);
 
         this.timerId = setInterval(this.handleTimer.bind(this), this.timerInterval);
     }
@@ -119,6 +123,10 @@ export class UserInputThrottler extends TransparentCanvas {
 
             this.groupedEvents.push({ type: CanvasEventType.MouseLeftButtonDown, value: position });
         }
+    }
+
+    private handlesizeChange(size: Size): void {
+        this.transparentCanvas.size = size;
     }
 
     private handleTimer(): void {

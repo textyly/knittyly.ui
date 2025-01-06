@@ -36,7 +36,7 @@ export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
     // #region interface
 
     public onRedraw(listener: VoidListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel0(listener);
+        return this.messaging.listenOnChannel(listener);
     }
 
     public onDrawDot(listener: DrawDotListener): VoidUnsubscribe {
@@ -62,6 +62,7 @@ export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
     public onUnhoverDot(listener: UnhoverDotListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel6(listener);
     }
+    
     // #region abstract
 
     public abstract draw(): void;
@@ -73,7 +74,7 @@ export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
     // #region events
 
     protected invokeRedraw(): void {
-        this.messaging.sendToChannel0();
+        this.messaging.sendToChannel();
     }
 
     protected invokeDrawDot(event: DrawDotEvent): void {

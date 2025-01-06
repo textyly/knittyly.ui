@@ -1,4 +1,4 @@
-import { RasterCanvas } from "../../html/raster.js";
+import { RasterCanvas } from "../../html/raster/raster.js";
 import { CanvasSide, IVirtualCanvas, Line } from "../../virtual/types.js";
 import { DotCanvas } from "./base.js";
 

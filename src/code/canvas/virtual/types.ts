@@ -5,6 +5,8 @@ import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 
 export type Id = string;
 
+export type DotsConfig = { x: number, y: number, radius: number, spacing: number };
+
 export type Dot = { id: Id, x: number, y: number, radius: number };
 export type Line = { from: Dot, to: Dot, side: CanvasSide };
 export type Link = { id: Id, from: Dot, to: Dot, side: CanvasSide };
@@ -47,7 +49,7 @@ export interface IVirtualCanvas extends ICanvas {
 
 // #region enums
 
-export enum CanvasSide {    
+export enum CanvasSide {
     Front,
     Back
 }

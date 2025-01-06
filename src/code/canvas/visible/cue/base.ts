@@ -1,6 +1,7 @@
 import { Canvas } from "../../base.js";
-import { SvgCanvas } from "../../html/svg.js";
+import { SvgCanvas } from "../../html/svg/svg.js";
 import { SvgDot, SvgLine } from "../../html/types.js";
+import { Size } from "../../types.js";
 import {
     Id,
     CanvasSide,
@@ -40,6 +41,9 @@ export class CueCanvas extends Canvas {
 
         const dotUnhoveredUn = this.virtualCanvas.onUnhoverDot(this.handleDotUnhovered.bind(this));
         super.registerUn(dotUnhoveredUn);
+
+        const sizeChangedUn = this.virtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
+        super.registerUn(sizeChangedUn);
     }
 
     override disposeCore(): void {
@@ -86,5 +90,9 @@ export class CueCanvas extends Canvas {
             this.svgCanvas.removeLine(line);
             this.lines.delete(lineId);
         }
+    }
+
+    private handleSizeChange(size: Size): void {
+        this.svgCanvas.size = size;
     }
 }

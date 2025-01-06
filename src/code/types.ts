@@ -21,4 +21,4 @@ export type VoidListener = Listener<void>;
 /**
  * 
  */
-export type ErrorListener = Listener<Error>;
+export type ErrorListener = Listener<unknown>;

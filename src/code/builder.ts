@@ -4,13 +4,14 @@ import { ITransparentCanvas } from "./canvas/transparent/types.js";
 import { VirtualDrawing } from "./canvas/virtual/drawing.js";
 import { CueCanvas } from "./canvas/visible/cue/base.js";
 import { IVirtualCanvas } from "./canvas/virtual/types.js";
-import { RasterCanvas } from "./canvas/html/raster.js";
-import { SvgCanvas } from "./canvas/html/svg.js";
+import { RasterCanvas } from "./canvas/html/raster/raster.js";
+import { SvgCanvas } from "./canvas/html/svg/svg.js";
 import { FrontDotCanvas } from "./canvas/visible/dot/front.js";
+import { TransparentSvgCanvas } from "./canvas/html/svg/transparent.js";
 
 export class CanvasBuilder {
     public build(): IVirtualCanvas {
-        const userInputCanvasCapturer = this.buildUserInputCanvasCapturer();
+        const userInputCanvasCapturer = this.buildUserInputCanvas();
         const userInputCanvasThrottler = this.buildUserInputCanvasThrottler(userInputCanvasCapturer);
         const virtualCanvas = this.buildVirtualCanvas(userInputCanvasThrottler);
 
@@ -20,13 +21,14 @@ export class CanvasBuilder {
         return virtualCanvas;
     }
 
-    private buildUserInputCanvasCapturer(): ITransparentCanvas {
-        const userInputSvgCanvas = document.getElementById("plot") as HTMLElement;
-        userInputSvgCanvas.setAttribute("width", window.innerWidth.toString());
-        userInputSvgCanvas.setAttribute("height", window.innerHeight.toString());
+    private buildUserInputCanvas(): ITransparentCanvas {
+        const svgCanvas = document.getElementById("plot") as HTMLElement;
+        const wrapper = new TransparentSvgCanvas(svgCanvas);
+        wrapper.initialize();
 
-        const canvas = new UserInputCanvas(userInputSvgCanvas);
+        const canvas = new UserInputCanvas(wrapper);
         canvas.initialize();
+
         return canvas;
     }
 
@@ -44,20 +46,18 @@ export class CanvasBuilder {
 
     private buildDotCanvas(virtualCanvas: IVirtualCanvas): void {
         const htmlCanvas = document.getElementById("canvas") as HTMLCanvasElement;
-        htmlCanvas.width = window.innerWidth;
-        htmlCanvas.height = window.innerHeight;
-
         const wrapper = new RasterCanvas(htmlCanvas);
+        wrapper.initialize();
+
         const gridCanvas = new FrontDotCanvas(wrapper, virtualCanvas);
         gridCanvas.initialize();
     }
 
     private buildUnknownCanvas(virtualCanvas: IVirtualCanvas): void {
         const svgCanvas = document.getElementById("svg") as HTMLElement;
-        svgCanvas.setAttribute("width", window.innerWidth.toString());
-        svgCanvas.setAttribute("height", window.innerHeight.toString());
-
         const wrapper = new SvgCanvas(svgCanvas);
+        wrapper.initialize();
+
         const cueCanvas = new CueCanvas(wrapper, virtualCanvas);
         cueCanvas.initialize();
     }

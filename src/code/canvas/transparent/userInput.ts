@@ -1,37 +1,40 @@
 import { TransparentCanvas } from "./base.js";
-import { HtmlCanvas, HtmlCanvasEvents } from "../visible/types.js";
-import { MouseEventHandler, Position, WheelChangeHandler } from "./types.js";
+import { ITransparentSvgCanvas } from "../html/types.js";
+import { WheelEvent, MouseMoveEvent, MouseButtonDownEvent } from "../html/types.js";
+import { Size } from "../types.js";
 
 export class UserInputCanvas extends TransparentCanvas {
 
     //#region fields
 
-    private readonly wheelChangeHandler: WheelChangeHandler;
-    private readonly mouseMoveHandler: MouseEventHandler;
-    private readonly mouseButtonDownHandler: MouseEventHandler;
+    private transperantSvgCanvas: ITransparentSvgCanvas;
 
     //#endregion
 
-    constructor(private htmlCanvas: HtmlCanvas) {
-        super(htmlCanvas.clientWidth, htmlCanvas.clientHeight);
+    constructor(transperantSvgCanvas: ITransparentSvgCanvas) {
+        super(transperantSvgCanvas.size.width, transperantSvgCanvas.size.height);
 
-        this.wheelChangeHandler = this.handleWheelChange.bind(this);
-        this.mouseMoveHandler = this.handleMouseMove.bind(this);
-        this.mouseButtonDownHandler = this.handleMouseButtonDown.bind(this);
+        this.transperantSvgCanvas = transperantSvgCanvas;
     }
 
     // #region abstract overrides
 
     protected override initializeCore(): void {
-        this.htmlCanvas.addEventListener(HtmlCanvasEvents.WheelChange, this.wheelChangeHandler);
-        this.htmlCanvas.addEventListener(HtmlCanvasEvents.MouseMove, this.mouseMoveHandler);
-        this.htmlCanvas.addEventListener(HtmlCanvasEvents.MouseDown, this.mouseButtonDownHandler);
+        const wheelChangeUn = this.transperantSvgCanvas.onWheelChange(this.handleWheelChange.bind(this));
+        super.registerUn(wheelChangeUn);
+
+        const mouseMoveUn = this.transperantSvgCanvas.onMouseMove(this.handleMouseMove.bind(this));
+        super.registerUn(mouseMoveUn);
+
+        const mouseButtonDownUn = this.transperantSvgCanvas.onMouseButtonDown(this.handleMouseButtonDown.bind(this));
+        super.registerUn(mouseButtonDownUn);
+
+        const sizeChangedUn = super.onSizeChange(this.handleSizeChange.bind(this));
+        super.registerUn(sizeChangedUn);
     }
 
     protected override disposeCore(): void {
-        this.htmlCanvas.removeEventListener(HtmlCanvasEvents.WheelChange, this.wheelChangeHandler);
-        this.htmlCanvas.removeEventListener(HtmlCanvasEvents.MouseMove, this.mouseMoveHandler);
-        this.htmlCanvas.removeEventListener(HtmlCanvasEvents.MouseDown, this.mouseButtonDownHandler);
+        // baseclass will dispose the event listeners
     }
 
     // #endregion
@@ -43,29 +46,24 @@ export class UserInputCanvas extends TransparentCanvas {
         deltaY < 0 ? super.invokeZoomIn() : super.invokeZoomOut();
     }
 
-    private handleMouseButtonDown(event: MouseEvent): void {
+    private handleMouseMove(event: MouseMoveEvent): void {
+        super.invokeMouseMove(event);
+    }
+
+    private handleMouseButtonDown(event: MouseButtonDownEvent): void {
         const leftButton = 0;
         if (event.button === leftButton) {
-            const position = this.getPosition(event);
-            super.invokeMouseLeftButtonDown({ position });
+            super.invokeMouseLeftButtonDown(event);
         }
     }
 
-    private handleMouseMove(event: MouseEvent): void {
-        const position = this.getPosition(event);
-        super.invokeMouseMove({ position });
+    private handleSizeChange(size: Size): void {
+        this.transperantSvgCanvas.size = size;
     }
 
     // #endregion
 
     // #region methods 
-
-    private getPosition(event: MouseEvent): Position {
-        const rect = this.htmlCanvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        return { x, y };
-    }
 
     // #endregion
 }

@@ -6,29 +6,34 @@ import {
     Channel,
     ChannelListener,
     ChannelData,
-    PrivateChannelName
+    PrivateChannels
 } from "./types.js";
 
 export abstract class Messaging implements IMessaging {
     // #region fields
-    private readonly errorChannel: Channel = PrivateChannelName.Error;
-
-    private _started: boolean;
 
     private readonly name: string;
+
+    private readonly errorChannel: Channel;
     private readonly validator: MessagingBaseValidator;
+
     private readonly privateChannels: Map<Channel, ChannelListeners>;
     private readonly publicChannels: Map<Channel, ChannelListeners>;
+
+    private _started: boolean;
 
     // #endregion
 
     constructor(name: string) {
-        this._started = false;
-
         this.name = name;
+
+        this.errorChannel = PrivateChannels.Error;
         this.validator = new MessagingBaseValidator(name);
+
         this.privateChannels = new Map<Channel, ChannelListeners>;
         this.publicChannels = new Map<Channel, ChannelListeners>;
+
+        this._started = false;
     }
 
     // #region interface
@@ -70,7 +75,7 @@ export abstract class Messaging implements IMessaging {
         this.ensureStarted();
 
         this.validator.validateOn(channel, listener);
-        this.ensureChannelExists(channel);
+        this.ensureChannelExists(channel, this.publicChannels);
 
         const un = this.onCore(channel, listener, this.publicChannels);
         return un;
@@ -100,21 +105,21 @@ export abstract class Messaging implements IMessaging {
         this.ensureStarted();
 
         this.validator.validateSend(channel, data);
-        this.ensureChannelExists(channel);
+        this.ensureChannelExists(channel, this.publicChannels);
 
         const listeners = this.publicChannels.get(channel)!;
-        listeners.forEach((l) => this.sendCore(l, data));
+        listeners.forEach((l) => this.sendSafely(l, data));
     }
 
-    private sendCore(listener: ChannelListener, data: ChannelData): void {
+    private sendSafely(listener: ChannelListener, data: ChannelData): void {
         try {
             listener(data);
         } catch (error: unknown) {
-            this.sendError(error as Error);
+            this.sendError(error);
         }
     }
 
-    private sendError(error: Error): void {
+    private sendError(error: unknown): void {
         const errorListeners = this.privateChannels.get(this.errorChannel);
         errorListeners?.forEach((listener) => {
             try {
@@ -143,8 +148,8 @@ export abstract class Messaging implements IMessaging {
         }
     }
 
-    private ensureChannelExists(channel: Channel): void {
-        if (!this.publicChannels.has(channel)) {
+    private ensureChannelExists(channel: Channel, channels: Map<Channel, Array<ChannelListener>>): void {
+        if (!channels.has(channel)) {
             throw new Error(`channel ${channel} does not exist or has been destroyed.`);
         }
     }

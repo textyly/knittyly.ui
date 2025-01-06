@@ -1,5 +1,5 @@
 import { ICanvas, Size } from "../types";
-import { Listener, VoidListener, VoidUnsubscribe } from "../../types";
+import { Listener, VoidUnsubscribe } from "../../types";
 
 // #region types 
 export type SizeChangeEvent = Size;

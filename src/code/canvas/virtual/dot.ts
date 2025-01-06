@@ -1,13 +1,14 @@
 import { Dot, Id } from "./types.js";
 import { VirtualCanvas } from "./base.js";
 import { MouseLeftButtonDownEvent, MouseMoveEvent, } from "../transparent/types.js";
+import { IdGenerator } from "../../utilities/generator.js";
 
-export class DotVirtualCanvas extends VirtualCanvas {
+export class VirtualDotCanvas extends VirtualCanvas {
     // #region fields
 
     private dots: Map<Id, Dot>;
 
-    private nextId: number;
+    private idGenerator: IdGenerator;
 
     private radius: number;
     private radiusStep: number;
@@ -24,7 +25,7 @@ export class DotVirtualCanvas extends VirtualCanvas {
         super(width, height);
 
         this.dots = new Map<Id, Dot>;
-        this.nextId = 0;
+        this.idGenerator = new IdGenerator();
 
         this.radius = 2;
         this.radiusStep = 0.2;
@@ -52,7 +53,7 @@ export class DotVirtualCanvas extends VirtualCanvas {
     // #region interface
 
     public draw(): void {
-        this.nextId = 0;
+        this.idGenerator.reset();
 
         this.dots = this.createDots();
         this.dots.forEach((dot) => {
@@ -89,7 +90,8 @@ export class DotVirtualCanvas extends VirtualCanvas {
         const dot = this.getDot(position.x, position.y);
         if (dot) {
             if (dot.id !== this.hovered?.id && dot.id !== this.hovered?.originalDot?.id) {
-                this.hovered = { x: dot.x, y: dot.y, radius: dot.radius + 2, id: this.getNextId(), originalDot: dot };
+                const id = this.idGenerator.next();
+                this.hovered = { x: dot.x, y: dot.y, radius: dot.radius + 2, id, originalDot: dot };
                 const dotHoveredEvent = { dot: this.hovered };
                 super.invokeHoverDot(dotHoveredEvent);
             }
@@ -129,7 +131,7 @@ export class DotVirtualCanvas extends VirtualCanvas {
 
         for (let y = this.spacing; y < super.size.height; y += this.spacing) {
             for (let x = this.spacing; x < super.size.width; x += this.spacing) {
-                const id = this.getNextId();
+                const id = this.idGenerator.next();
                 const dot = { id, x, y, radius: this.radius };
                 dots.set(id, dot);
             }
@@ -148,12 +150,6 @@ export class DotVirtualCanvas extends VirtualCanvas {
                 return dot;
             }
         }
-    }
-
-    private getNextId(): string {
-        const id = ++this.nextId;
-        const strId = id.toString();
-        return strId;
     }
 
     // #endregion

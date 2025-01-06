@@ -1,22 +1,10 @@
-import { Canvas } from "../base.js";
-import { Dot } from "../virtual/types.js";
-import { SvgDot, SvgLine } from "./types.js";
+import { Dot } from "../../virtual/types.js";
+import { SvgDot, SvgLine } from "../types.js";
+import { SvgCanvasBase } from "./base.js";
 
-export class SvgCanvas extends Canvas {
-    private svgCanvas: HTMLElement;
-
+export class SvgCanvas extends SvgCanvasBase {
     constructor(svgCanvas: HTMLElement) {
-        super(svgCanvas.clientWidth, svgCanvas.clientHeight);
-
-        this.svgCanvas = svgCanvas;
-    }
-
-    protected override initializeCore(): void {
-        // do nothing
-    }
-
-    protected override disposeCore(): void {
-        // do nothing
+        super(svgCanvas);
     }
 
     public drawDot(dot: Dot): SvgDot {

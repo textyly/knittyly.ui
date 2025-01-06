@@ -53,9 +53,10 @@ export abstract class Canvas implements ICanvas {
     }
 
     public dispose(): void {
+        // TODO: dispose must never throw exceptions !!!
         if (this.initialized) {
             this.disposeCore();
-            this.unFuncs.forEach((un) => un());
+            this.unFuncs.forEach((un) => un()); // TODO: handle exceptions
             this.msg.stop();
             this.initialized = false;
         }

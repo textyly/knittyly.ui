@@ -1,9 +1,13 @@
-import { Dot, Line } from "../virtual/types.js";
+import { Canvas } from "../../base.js";
+import { Size } from "../../types.js";
+import { Dot, Line } from "../../virtual/types.js";
 
-export class RasterCanvas {
+export class RasterCanvas extends Canvas {
     private readonly context: CanvasRenderingContext2D;
 
     constructor(private htmlCanvas: HTMLCanvasElement) {
+        super(htmlCanvas.clientWidth, htmlCanvas.clientHeight);
+
         this.context = htmlCanvas.getContext("2d")!;
     }
 
@@ -32,5 +36,19 @@ export class RasterCanvas {
         this.context.lineWidth = line.from.radius;
         this.context.strokeStyle = "gray";
         this.context.stroke();
+    }
+
+    protected override initializeCore(): void {
+        const sizeChangedUn = super.onSizeChange(this.handleSizeChange.bind(this));
+        super.registerUn(sizeChangedUn);
+    }
+
+    protected override disposeCore(): void {
+        // base class will unsubscribe
+    }
+
+    private handleSizeChange(size: Size): void {
+        this.htmlCanvas.width = size.width;
+        this.htmlCanvas.height = size.height;
     }
 }

@@ -47,24 +47,24 @@ export interface IMessaging extends ITelemetryEmitter {
     stop(): void;
 }
 
-export interface IMessaging0 extends IMessaging {
+export interface IVoidMessaging extends IMessaging {
 
     /**
      * 
      * @param listener 
      */
-    listenOnChannel0(listener: VoidListener): VoidUnsubscribe;
+    listenOnChannel(listener: VoidListener): VoidUnsubscribe;
 
     /**
      * 
      */
-    sendToChannel0(): void;
+    sendToChannel(): void;
 }
 
 /**
 * 
 */
-export interface IMessaging1<Data> extends IMessaging0 {
+export interface IMessaging1<Data> extends IVoidMessaging {
 
     /**
      * 
@@ -191,7 +191,7 @@ export interface IMessaging7<Data1, Data2, Data3, Data4, Data5, Data6, Data7> ex
 /**
  * 
  */
-export enum PublicChannelName {
+export enum PublicChannels {
     Channel0 = "channel0",
     Channel1 = "channel1",
     Channel2 = "channel2",
@@ -202,7 +202,7 @@ export enum PublicChannelName {
     Channel7 = "channel7",
 }
 
-export enum PrivateChannelName {
+export enum PrivateChannels {
     Error = "error",
 }
 
