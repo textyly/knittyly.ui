@@ -1,6 +1,6 @@
+import { SvgCanvasBase } from "./base.js";
 import { Dot } from "../../virtual/types.js";
 import { SvgDot, SvgLine } from "../types.js";
-import { SvgCanvasBase } from "./base.js";
 
 export class SvgCanvas extends SvgCanvasBase {
     constructor(svgCanvas: HTMLElement) {

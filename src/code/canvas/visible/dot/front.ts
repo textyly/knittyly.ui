@@ -1,6 +1,6 @@
+import { DotCanvas } from "./base.js";
 import { RasterCanvas } from "../../html/raster/raster.js";
 import { CanvasSide, IVirtualCanvas, Line } from "../../virtual/types.js";
-import { DotCanvas } from "./base.js";
 
 export class FrontDotCanvas extends DotCanvas {
     constructor(rasterCanvas: RasterCanvas, virtualCanvas: IVirtualCanvas) {

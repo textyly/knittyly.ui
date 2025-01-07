@@ -107,6 +107,10 @@ export class VirtualLineCanvas extends VirtualCanvas {
         // TODO: implement
     }
 
+    protected override sizeChangeCore(): void {
+        // TODO: implement
+    }
+
     protected override disposeCore(): void {
         this.lines = [];
     }

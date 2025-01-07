@@ -29,7 +29,7 @@ export class CueCanvas extends Canvas {
         this.lines = new Map<Id, SvgLine>();
     }
 
-    override initializeCore(): void {
+    protected override initializeCore(): void {
         const drawLinkUn = this.virtualCanvas.onDrawLink(this.handleDrawLink.bind(this));
         super.registerUn(drawLinkUn);
 
@@ -46,7 +46,11 @@ export class CueCanvas extends Canvas {
         super.registerUn(sizeChangedUn);
     }
 
-    override disposeCore(): void {
+    protected override sizeChangeCore(): void {
+        this.svgCanvas.size = super.size;
+    }
+
+    protected override disposeCore(): void {
         this.dots.clear();
         this.lines.clear();
 
@@ -93,6 +97,6 @@ export class CueCanvas extends Canvas {
     }
 
     private handleSizeChange(size: Size): void {
-        this.svgCanvas.size = size;
+        super.size = size;
     }
 }

@@ -41,6 +41,7 @@ export class VirtualDotCanvas extends VirtualCanvas {
     // #region interface
 
     public draw(): void {
+        // TODO: !!!
         const width = this.dotGrid.width;
         const height = this.dotGrid.height;
         const size = { width, height };
@@ -105,6 +106,10 @@ export class VirtualDotCanvas extends VirtualCanvas {
     // #region overrides
 
     protected override initializeCore(): void {
+        // TODO: implement
+    }
+
+    protected override sizeChangeCore(): void {
         // TODO: implement
     }
 

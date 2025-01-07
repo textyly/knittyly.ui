@@ -48,10 +48,11 @@ export class UserInputThrottler extends TransparentCanvas {
         const mouseLeftButtonDown = this.transparentCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
         super.registerUn(mouseLeftButtonDown);
 
-        const sizeChangedUn = super.onSizeChange(this.handlesizeChange.bind(this));
-        super.registerUn(sizeChangedUn);
-
         this.timerId = setInterval(this.handleTimer.bind(this), this.timerInterval);
+    }
+
+    protected override sizeChangeCore(): void {
+        this.transparentCanvas.size = super.size;
     }
 
     protected override disposeCore(): void {
@@ -123,10 +124,6 @@ export class UserInputThrottler extends TransparentCanvas {
 
             this.groupedEvents.push({ type: CanvasEventType.MouseLeftButtonDown, value: position });
         }
-    }
-
-    private handlesizeChange(size: Size): void {
-        this.transparentCanvas.size = size;
     }
 
     private handleTimer(): void {

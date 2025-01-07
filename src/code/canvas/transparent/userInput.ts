@@ -28,9 +28,10 @@ export class UserInputCanvas extends TransparentCanvas {
 
         const mouseButtonDownUn = this.transperantSvgCanvas.onMouseButtonDown(this.handleMouseButtonDown.bind(this));
         super.registerUn(mouseButtonDownUn);
+    }
 
-        const sizeChangedUn = super.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangedUn);
+    protected override sizeChangeCore(): void {
+        this.transperantSvgCanvas.size = super.size;
     }
 
     protected override disposeCore(): void {
@@ -55,10 +56,6 @@ export class UserInputCanvas extends TransparentCanvas {
         if (event.button === leftButton) {
             super.invokeMouseLeftButtonDown(event);
         }
-    }
-
-    private handleSizeChange(size: Size): void {
-        this.transperantSvgCanvas.size = size;
     }
 
     // #endregion

@@ -78,6 +78,7 @@ export abstract class Canvas implements ICanvas {
     // #region abstract
 
     protected abstract initializeCore(): void;
+    protected abstract sizeChangeCore(): void;
     protected abstract disposeCore(): void;
 
     // #endregion
@@ -89,6 +90,7 @@ export abstract class Canvas implements ICanvas {
     }
 
     private invokeSizeChange(event: SizeChangeEvent): void {
+        this.sizeChangeCore();
         this.msg.sendToChannel1(event);
     }
 

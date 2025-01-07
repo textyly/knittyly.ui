@@ -49,6 +49,13 @@ export class VirtualDrawing extends VirtualCanvas {
         this.subscribe();
     }
 
+    protected override sizeChangeCore(): void {
+        const size = super.size;
+        this.transparentCanvas.size = size;
+        this.virtualDotCanvas.size = size;
+        this.virtualLineCanvas.size = size;
+    }
+
     protected override disposeCore(): void {
         this.unsubscribe();
         this.virtualLineCanvas.dispose();
@@ -112,12 +119,6 @@ export class VirtualDrawing extends VirtualCanvas {
     }
 
     private handleSizeChange(size: Size): void {
-        this.transparentCanvas.size = size;
-        this.virtualDotCanvas.size = size;
-        this.virtualLineCanvas.size = size;
-    }
-
-    private handleDotCanvasSizeChange(size: Size): void {
         super.size = size;
     }
 
@@ -156,10 +157,7 @@ export class VirtualDrawing extends VirtualCanvas {
         const unhoverDotUn = this.virtualDotCanvas.onUnhoverDot(this.handleUnhoverDot.bind(this));
         super.registerUn(unhoverDotUn);
 
-        const sizeChangedUn = super.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangedUn);
-
-        const dotCanvasSizeChangedUn = this.virtualDotCanvas.onSizeChange(this.handleDotCanvasSizeChange.bind(this));
+        const dotCanvasSizeChangedUn = this.virtualDotCanvas.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(dotCanvasSizeChangedUn);
     }
 

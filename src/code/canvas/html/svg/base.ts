@@ -1,5 +1,4 @@
 import { Canvas } from "../../base.js";
-import { Size } from "../../types.js";
 
 export abstract class SvgCanvasBase extends Canvas {
     protected svgCanvas: HTMLElement;
@@ -11,16 +10,19 @@ export abstract class SvgCanvasBase extends Canvas {
     }
 
     protected override initializeCore(): void {
-        const sizeChangedUn = super.onSizeChange(this.handleSizeChange.bind(this));
-        super.registerUn(sizeChangedUn);
+        // do nothing
+    }
+
+    protected override sizeChangeCore(): void {
+        const size = super.size;
+        const width = size.width.toString();
+        const height = size.height.toString();
+
+        this.svgCanvas.setAttribute("width", width);
+        this.svgCanvas.setAttribute("height", height);
     }
 
     protected override disposeCore(): void {
         // do nothing
-    }
-
-    private handleSizeChange(size: Size): void {
-        this.svgCanvas.setAttribute("width", size.width.toString());
-        this.svgCanvas.setAttribute("height", size.height.toString());
     }
 }
