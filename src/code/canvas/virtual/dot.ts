@@ -1,7 +1,7 @@
-import { DotGrid } from "../../grid/dot.js";
 import { VirtualCanvas } from "./base.js";
-import { IdGenerator } from "../../utilities/generator.js";
+import { DotGrid } from "../../grid/dot.js";
 import { Dot, DotsConfig, Id } from "./types.js";
+import { IdGenerator } from "../../utilities/generator.js";
 import { MouseLeftButtonDownEvent, MouseMoveEvent, } from "../transparent/types.js";
 
 // TODO: ugly code!!!
@@ -102,22 +102,6 @@ export class VirtualDotCanvas extends VirtualCanvas {
     }
 
     // #endregion
-
-    // #region overrides
-
-    protected override initializeCore(): void {
-        // TODO: implement
-    }
-
-    protected override sizeChangeCore(): void {
-        // TODO: implement
-    }
-
-    protected override disposeCore(): void {
-        // TODO: implement
-    }
-
-    // #endregion 
 
     // #region methods
 

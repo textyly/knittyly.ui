@@ -101,22 +101,6 @@ export class VirtualLineCanvas extends VirtualCanvas {
 
     // #endregion
 
-    // #region overrides
-
-    protected override initializeCore(): void {
-        // TODO: implement
-    }
-
-    protected override sizeChangeCore(): void {
-        // TODO: implement
-    }
-
-    protected override disposeCore(): void {
-        this.lines = [];
-    }
-
-    // #endregion
-
     // #region methods
 
     private createLines(): Array<Line> {

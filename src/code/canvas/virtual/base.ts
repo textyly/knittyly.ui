@@ -71,6 +71,19 @@ export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
 
     // #endregion
 
+    // #region overrides
+
+    protected override initializeCore(): void {
+    }
+
+    protected override sizeChangeCore(): void {
+    }
+
+    protected override disposeCore(): void {
+    }
+
+    // #endregion 
+
     // #region events
 
     protected invokeRedraw(): void {
