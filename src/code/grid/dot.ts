@@ -1,31 +1,38 @@
-import { Dot, Id } from "../canvas/virtual/types";
-import { IdGenerator } from "../utilities/generator";
+import { Dot, DotsConfig, Id } from "../canvas/virtual/types.js";
+import { IdGenerator } from "../utilities/generator.js";
 
 export class DotGrid {
-    private readonly dots: Map<Id, Dot>;
+    public dots: Map<Id, Dot>;
     private readonly idGenerator: IdGenerator;
 
-    private width!: number;
-    private height!: number;
-    private radius!: number;
-    private spacing!: number;
+    public x!: number;
+    public y!: number;
+    public radius!: number;
+    public spacing!: number;
 
-    constructor(settings: DotGridSettings) {
+    constructor(public config: DotsConfig) {
         this.dots = new Map();
         this.idGenerator = new IdGenerator();
-        this.recalculate(settings);
+        this.recalculate(config.x, config.y, config.radius.value, config.spacing.value);
     }
 
-    public get widthXXX(): number {
-        throw new Error();
+    public get width(): number {
+        const w = (this.x * this.radius) + ((this.x - 1) * this.spacing);
+        return w;
     }
 
-    public get heightXXX(): number {
-        throw new Error();
+    public get height(): number {
+        const h = (this.y * this.radius) + ((this.y - 1) * this.spacing);
+        return h;
     }
 
-    public get dotsXXX(): Array<Dot> {
-        throw new Error();
+    public recalculate(x: number, y: number, radius: number, spacing: number): void {
+        this.idGenerator.reset();
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.spacing = spacing;
+        this.dots = this.createDots();
     }
 
     // TODO: try to find a better algorithm
@@ -44,33 +51,17 @@ export class DotGrid {
         return this.dots.get(id);
     }
 
-    public recalculate(settings: DotGridSettings): void {
-        this.width = settings.width;
-        this.height = settings.height;
-        this.radius = settings.radius;
-        this.spacing = settings.spacing;
-        this.createDots();
-    }
-
-    public recalculateBySpacing(spacing: number, radius: number): void {
-        this.spacing = spacing;
-        this.radius = radius;
-        this.createDots();
-    }
-
-    public recalculateBySize(width: number, height: number): void {
-        this.width = width;
-        this.height = height;
-        this.createDots();
-    }
-
     private createDots(): Map<string, Dot> {
         const dots = new Map<string, Dot>();
 
-        for (let y = this.spacing; y < this.height; y += this.spacing) {
-            for (let x = this.spacing; x < this.width; x += this.spacing) {
+        for (let y = 0; y < this.y; ++y) {
+            for (let x = 0; x < this.x; ++x) {
                 const id = this.idGenerator.next();
-                const dot = { id, x, y, radius: this.radius };
+
+                // TODO: !!!
+                const x1 = (x * this.spacing) + this.spacing;
+                const y1 = (y * this.spacing) + this.spacing;
+                const dot = { id, x: x1, y: y1, radius: this.radius };
                 dots.set(id, dot);
             }
         }
@@ -78,5 +69,3 @@ export class DotGrid {
         return dots;
     }
 }
-
-export type DotGridSettings = { width: number, height: number, spacing: number, radius: number };

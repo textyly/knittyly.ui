@@ -16,5 +16,6 @@
         "**/.github": true,
         "**/LICENSE": true,
         "**/README*": true,
-    }
+    },
+    "typescript.preferences.importModuleSpecifierEnding": "js",
 }

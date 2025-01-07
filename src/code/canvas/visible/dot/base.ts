@@ -13,7 +13,7 @@ export abstract class DotCanvas extends Canvas {
     protected readonly virtualCanvas: IVirtualCanvas;
 
     constructor(rasterCanvas: RasterCanvas, virtualCanvas: IVirtualCanvas) {
-        super(virtualCanvas.size.width, virtualCanvas.size.height);
+        super();
 
         this.rasterCanvas = rasterCanvas;
         this.virtualCanvas = virtualCanvas;

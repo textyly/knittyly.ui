@@ -1,102 +1,92 @@
-import { Dot, Id } from "./types.js";
+import { DotGrid } from "../../grid/dot.js";
 import { VirtualCanvas } from "./base.js";
-import { MouseLeftButtonDownEvent, MouseMoveEvent, } from "../transparent/types.js";
 import { IdGenerator } from "../../utilities/generator.js";
+import { Dot, DotsConfig, Id } from "./types.js";
+import { MouseLeftButtonDownEvent, MouseMoveEvent, } from "../transparent/types.js";
 
+// TODO: ugly code!!!
 export class VirtualDotCanvas extends VirtualCanvas {
     // #region fields
 
-    private dots: Map<Id, Dot>;
-
+    private readonly dotGrid: DotGrid;
     private idGenerator: IdGenerator;
 
-    private radius: number;
-    private radiusStep: number;
-
-    private spacing: number;
-    private spacingStep: number;
-
-    private clicked?: Dot;
-    private hovered?: Dot & { originalDot: Dot }; // TODO: ugly!!!
+    private clicked?: Id;
+    private hovered?: { id: Id } & { originalDot: Id }; // TODO: ugly!!!
 
     // #endregion
 
-    constructor(width: number, height: number) {
-        super(width, height);
+    constructor(config: DotsConfig) {
+        super();
 
-        this.dots = new Map<Id, Dot>;
+        this.dotGrid = new DotGrid(config);
+
         this.idGenerator = new IdGenerator();
-
-        this.radius = 2;
-        this.radiusStep = 0.2;
-
-        this.spacing = 20;
-        this.spacingStep = 2;
-    }
-
-    public get dotRadius(): number {
-        return this.radius;
     }
 
     public get clickedDot(): Dot | undefined {
-        return this.clicked;
+        const clicked = this.dotGrid.getDotById(this.clicked!); // TODO: !!!
+        return clicked;
     }
 
-    public get hoveredDot(): Dot | undefined | undefined {
-        return this.hovered?.originalDot;
+    public get hoveredDot(): Dot | undefined {
+        const hovered = this.dotGrid.getDotById(this.hovered?.originalDot!); // TODO: !!!
+        return hovered;
     }
 
     public get(id: Id): Dot | undefined {
-        return this.dots.get(id);
+        return this.dotGrid.getDotById(id);
     }
 
     // #region interface
 
     public draw(): void {
-        this.idGenerator.reset();
+        const width = this.dotGrid.width;
+        const height = this.dotGrid.height;
+        const size = { width, height };
 
-        this.dots = this.createDots();
-        this.dots.forEach((dot) => {
+        super.size = size;
+
+        [...this.dotGrid.dots.values()].forEach((dot) => {
             const dotEvent = { dot };
             super.invokeDrawDot(dotEvent);
         });
     }
 
     public invokeZoomIn(): void {
-        this.radius += this.radiusStep;
-        this.spacing += this.spacingStep;
+        const x = this.dotGrid.x;
+        const y = this.dotGrid.y;
+        const radius = this.dotGrid.radius + this.dotGrid.config.radius.step;
+        const spacing = this.dotGrid.spacing + this.dotGrid.config.spacing.step;
 
-        // set a new size for all headless canvases
-        // super.size = // TODO: calculate new size
-
-        // inform all visible canvases that size, dots and line has been changed
+        this.dotGrid.recalculate(x, y, radius, spacing);
         this.draw();
     }
 
     public invokeZoomOut(): void {
-        this.radius -= this.radiusStep;
-        this.spacing -= this.spacingStep;
+        const x = this.dotGrid.x;
+        const y = this.dotGrid.y;
+        const radius = this.dotGrid.radius - this.dotGrid.config.radius.step;
+        const spacing = this.dotGrid.spacing - this.dotGrid.config.spacing.step;
 
-        // set a new size for all headless canvases
-        // super.size = // TODO: calculate new size
-
-        // inform all visible canvases that size, dots and lines has been changed
+        this.dotGrid.recalculate(x, y, radius, spacing);
         this.draw();
     }
 
     // TODO: ugly code!!!
     public invokeMouseMove(event: MouseMoveEvent): void {
         const position = event.position;
-        const dot = this.getDot(position.x, position.y);
+        const dot = this.dotGrid.getDotByCoordinates(position.x, position.y);
         if (dot) {
-            if (dot.id !== this.hovered?.id && dot.id !== this.hovered?.originalDot?.id) {
+            if (dot.id !== this.hovered?.id && dot.id !== this.hovered?.originalDot) {
                 const id = this.idGenerator.next();
-                this.hovered = { x: dot.x, y: dot.y, radius: dot.radius + 2, id, originalDot: dot };
-                const dotHoveredEvent = { dot: this.hovered };
+                this.hovered = { id, originalDot: dot.id };
+                const dotHoveredEvent = { dot: { id: this.hovered.id, x: dot.x, y: dot.y, radius: dot.radius + 2 } };
                 super.invokeHoverDot(dotHoveredEvent);
             }
-        } else if (this.hovered) {
-            const dotUnhoveredEvent = { dot: this.hovered };
+        } else if (this.hoveredDot) {
+            const dotUnhoveredEvent = { dot: { ...this.hoveredDot } };
+            dotUnhoveredEvent.dot.id = this.hovered?.id!;
             super.invokeUnhoverDot(dotUnhoveredEvent);
             this.hovered = undefined;
         }
@@ -104,9 +94,9 @@ export class VirtualDotCanvas extends VirtualCanvas {
 
     public invokeMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
         const position = event.position;
-        const dot = this.getDot(position.x, position.y);
+        const dot = this.dotGrid.getDotByCoordinates(position.x, position.y);
         if (dot) {
-            this.clicked = dot;
+            this.clicked = dot.id;
         }
     }
 
@@ -119,38 +109,12 @@ export class VirtualDotCanvas extends VirtualCanvas {
     }
 
     protected override disposeCore(): void {
-        this.dots.clear();
+        // TODO: implement
     }
 
     // #endregion 
 
     // #region methods
-
-    private createDots(): Map<string, Dot> {
-        const dots = new Map<string, Dot>();
-
-        for (let y = this.spacing; y < super.size.height; y += this.spacing) {
-            for (let x = this.spacing; x < super.size.width; x += this.spacing) {
-                const id = this.idGenerator.next();
-                const dot = { id, x, y, radius: this.radius };
-                dots.set(id, dot);
-            }
-        }
-
-        return dots;
-    }
-
-    // TODO: try to find a better algorithm
-    private getDot(x: number, y: number): Dot | undefined {
-        for (const dotKvp of this.dots) {
-            const dot = dotKvp[1];
-            const distance = Math.sqrt((x - dot.x) ** 2 + (y - dot.y) ** 2);
-            let isInside = distance <= dot.radius;
-            if (isInside) {
-                return dot;
-            }
-        }
-    }
 
     // #endregion
 }

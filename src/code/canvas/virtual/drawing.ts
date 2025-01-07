@@ -1,8 +1,11 @@
+
+import { Size } from "../types.js";
 import { VirtualCanvas } from "./base.js";
 import { VirtualDotCanvas } from "./dot.js";
-import { VirtualCueCanvas } from "./cue.js";
+import { VirtualLineCanvas } from "./line.js";
 import { ITransparentCanvas, MouseMoveEvent } from "../transparent/types.js";
 import {
+    DotsConfig,
     DrawDotEvent,
     DrawLineEvent,
     DrawLinkEvent,
@@ -10,23 +13,22 @@ import {
     RemoveLinkEvent,
     UnhoverDotEvent
 } from "./types.js";
-import { Size } from "../types.js";
 
 export class VirtualDrawing extends VirtualCanvas {
     // #region fields 
 
     private transparentCanvas: ITransparentCanvas
     private virtualDotCanvas: VirtualDotCanvas;
-    private virtualCueCanvas: VirtualCueCanvas;
+    private virtualLineCanvas: VirtualLineCanvas;
 
     //#endregion
 
-    constructor(transparentCanvas: ITransparentCanvas) {
-        super(transparentCanvas.size.width, transparentCanvas.size.height);
+    constructor(config: DotsConfig, transparentCanvas: ITransparentCanvas) {
+        super();
 
         this.transparentCanvas = transparentCanvas;
-        this.virtualDotCanvas = new VirtualDotCanvas(super.size.width, super.size.height);
-        this.virtualCueCanvas = new VirtualCueCanvas(this.virtualDotCanvas);
+        this.virtualDotCanvas = new VirtualDotCanvas(config);
+        this.virtualLineCanvas = new VirtualLineCanvas(this.virtualDotCanvas);
     }
 
     // #region interface
@@ -34,7 +36,7 @@ export class VirtualDrawing extends VirtualCanvas {
     public draw(): void {
         super.invokeRedraw();
         this.virtualDotCanvas.draw();
-        this.virtualCueCanvas.draw();
+        this.virtualLineCanvas.draw();
     }
 
     // #endregion 
@@ -43,13 +45,13 @@ export class VirtualDrawing extends VirtualCanvas {
 
     protected override initializeCore(): void {
         this.virtualDotCanvas.initialize();
-        this.virtualCueCanvas.initialize();
+        this.virtualLineCanvas.initialize();
         this.subscribe();
     }
 
     protected override disposeCore(): void {
         this.unsubscribe();
-        this.virtualCueCanvas.dispose();
+        this.virtualLineCanvas.dispose();
         this.virtualDotCanvas.dispose();
     }
 
@@ -60,22 +62,22 @@ export class VirtualDrawing extends VirtualCanvas {
     private handleZoomIn(): void {
         super.invokeRedraw();
         this.virtualDotCanvas.invokeZoomIn();
-        this.virtualCueCanvas.invokeZoomIn();
+        this.virtualLineCanvas.invokeZoomIn();
     }
 
     private handleZoomOut(): void {
         super.invokeRedraw();
         this.virtualDotCanvas.invokeZoomOut();
-        this.virtualCueCanvas.invokeZoomOut();
+        this.virtualLineCanvas.invokeZoomOut();
     }
 
     private handleMouseMove(event: MouseMoveEvent): void {
         this.virtualDotCanvas.invokeMouseMove(event);
-        this.virtualCueCanvas.invokeMouseMove(event);
+        this.virtualLineCanvas.invokeMouseMove(event);
     }
 
     private handleMouseLeftButtonDown(event: MouseMoveEvent): void {
-        this.virtualCueCanvas.invokeMouseLeftButtonDown(event);
+        this.virtualLineCanvas.invokeMouseLeftButtonDown(event);
         this.virtualDotCanvas.invokeMouseLeftButtonDown(event);
     }
 
@@ -109,10 +111,14 @@ export class VirtualDrawing extends VirtualCanvas {
         super.invokeUnhoverDot({ dot });
     }
 
-    private handleSizeChanged(size: Size): void {
+    private handleSizeChange(size: Size): void {
         this.transparentCanvas.size = size;
         this.virtualDotCanvas.size = size;
-        this.virtualCueCanvas.size = size;
+        this.virtualLineCanvas.size = size;
+    }
+
+    private handleDotCanvasSizeChange(size: Size): void {
+        super.size = size;
     }
 
     // #endregion
@@ -135,13 +141,13 @@ export class VirtualDrawing extends VirtualCanvas {
         const drawDotUn = this.virtualDotCanvas.onDrawDot(this.handleDrawDot.bind(this));
         super.registerUn(drawDotUn);
 
-        const drawLineUn = this.virtualCueCanvas.onDrawLine(this.handleDrawLine.bind(this));
+        const drawLineUn = this.virtualLineCanvas.onDrawLine(this.handleDrawLine.bind(this));
         super.registerUn(drawLineUn);
 
-        const drawLinkUn = this.virtualCueCanvas.onDrawLink(this.handleDrawLink.bind(this));
+        const drawLinkUn = this.virtualLineCanvas.onDrawLink(this.handleDrawLink.bind(this));
         super.registerUn(drawLinkUn);
 
-        const removeLinkUn = this.virtualCueCanvas.onRemoveLink(this.handleRemoveLink.bind(this));
+        const removeLinkUn = this.virtualLineCanvas.onRemoveLink(this.handleRemoveLink.bind(this));
         super.registerUn(removeLinkUn);
 
         const hoverDotUn = this.virtualDotCanvas.onHoverDot(this.handleHoverDot.bind(this));
@@ -150,8 +156,11 @@ export class VirtualDrawing extends VirtualCanvas {
         const unhoverDotUn = this.virtualDotCanvas.onUnhoverDot(this.handleUnhoverDot.bind(this));
         super.registerUn(unhoverDotUn);
 
-        const sizeChangedUn = super.onSizeChange(this.handleSizeChanged.bind(this));
+        const sizeChangedUn = super.onSizeChange(this.handleSizeChange.bind(this));
         super.registerUn(sizeChangedUn);
+
+        const dotCanvasSizeChangedUn = this.virtualDotCanvas.onSizeChange(this.handleDotCanvasSizeChange.bind(this));
+        super.registerUn(dotCanvasSizeChangedUn);
     }
 
     private unsubscribe(): void {

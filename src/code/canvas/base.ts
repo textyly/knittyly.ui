@@ -10,19 +10,22 @@ export abstract class Canvas implements ICanvas {
 
     private initialized: boolean;
 
+    private width: number;
+    private height: number;
+
     private readonly sizeValidator: SizeValidator;
     private readonly msg: IMessaging1<SizeChangeEvent>;
     private readonly unFuncs: Array<VoidUnsubscribe>;
 
     //#endregion
 
-    constructor(private width: number, private height: number) {
+    constructor() {
         this.initialized = false;
 
-        this.sizeValidator = new SizeValidator();
+        this.width = 0;
+        this.height = 0;
 
-        const size = { width, height };
-        this.sizeValidator.validateSize(size);
+        this.sizeValidator = new SizeValidator();
 
         const className = Canvas.name;
         this.msg = new Messaging1(className);
@@ -40,9 +43,17 @@ export abstract class Canvas implements ICanvas {
 
     public set size(value: Size) {
         this.sizeValidator.validateSize(value);
-        this.width = value.width;
-        this.height = value.height;
-        this.invokeSizeChange(value);
+
+        const currentWidth = this.size.width;
+        const currentHeight = this.size.height;
+        const newWidth = value.width;
+        const newHeight = value.height;
+
+        if (currentWidth !== newWidth || currentHeight !== newHeight) {
+            this.width = newWidth;
+            this.height = newHeight;
+            this.invokeSizeChange(value);
+        }
     }
 
     public initialize(): void {

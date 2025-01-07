@@ -1,7 +1,7 @@
+import { Size } from "../types.js";
 import { TransparentCanvas } from "./base.js";
 import { ITransparentSvgCanvas } from "../html/types.js";
 import { WheelEvent, MouseMoveEvent, MouseButtonDownEvent } from "../html/types.js";
-import { Size } from "../types.js";
 
 export class UserInputCanvas extends TransparentCanvas {
 
@@ -12,7 +12,7 @@ export class UserInputCanvas extends TransparentCanvas {
     //#endregion
 
     constructor(transperantSvgCanvas: ITransparentSvgCanvas) {
-        super(transperantSvgCanvas.size.width, transperantSvgCanvas.size.height);
+        super();
 
         this.transperantSvgCanvas = transperantSvgCanvas;
     }

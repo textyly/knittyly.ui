@@ -22,8 +22,8 @@ export abstract class TransparentCanvas extends Canvas implements ITransparentCa
 
     //#endregion
 
-    constructor(width: number, height: number) {
-        super(width, height);
+    constructor() {
+        super();
 
         const className = TransparentCanvas.name;
         this.messaging = new Messaging4(className);

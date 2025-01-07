@@ -6,7 +6,7 @@ export class RasterCanvas extends Canvas {
     private readonly context: CanvasRenderingContext2D;
 
     constructor(private htmlCanvas: HTMLCanvasElement) {
-        super(htmlCanvas.clientWidth, htmlCanvas.clientHeight);
+        super();
 
         this.context = htmlCanvas.getContext("2d")!;
     }

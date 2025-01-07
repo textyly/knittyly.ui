@@ -4,7 +4,7 @@ import { CanvasSide, Line, Link } from "./types.js";
 import { IdGenerator } from "../../utilities/generator.js";
 import { MouseMoveEvent, MouseLeftButtonDownEvent } from "../transparent/types.js";
 
-export class VirtualCueCanvas extends VirtualCanvas {
+export class VirtualLineCanvas extends VirtualCanvas {
     // #region fields
 
     private dotVirtualCanvas: VirtualDotCanvas;
@@ -18,7 +18,7 @@ export class VirtualCueCanvas extends VirtualCanvas {
     // #endregion
 
     constructor(virtualDotCanvas: VirtualDotCanvas) {
-        super(virtualDotCanvas.size.width, virtualDotCanvas.size.height);
+        super();
 
         this.dotVirtualCanvas = virtualDotCanvas;
 
@@ -42,10 +42,20 @@ export class VirtualCueCanvas extends VirtualCanvas {
 
     public invokeZoomIn(): void {
         this.draw();
+
+        if (this.link) {
+            const position = this.link.to;
+            this.invokeMouseMove({ position });
+        }
     }
 
     public invokeZoomOut(): void {
         this.draw();
+
+        if (this.link) {
+            const position = this.link.to;
+            this.invokeMouseMove({ position });
+        }
     }
 
     public invokeMouseMove(event: MouseMoveEvent): void {

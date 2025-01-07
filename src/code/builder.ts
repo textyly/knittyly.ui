@@ -39,7 +39,8 @@ export class CanvasBuilder {
     }
 
     private buildVirtualCanvas(userInputCanvasThrottler: ITransparentCanvas): IVirtualCanvas {
-        const virtualCanvas = new VirtualDrawing(userInputCanvasThrottler);
+        const dotsConfig = { x: 50, y: 50, radius: { value: 2, step: 0.2 }, spacing: { value: 20, step: 2 } };
+        const virtualCanvas = new VirtualDrawing(dotsConfig, userInputCanvasThrottler);
         virtualCanvas.initialize();
         return virtualCanvas;
     }

@@ -5,7 +5,7 @@ export abstract class SvgCanvasBase extends Canvas {
     protected svgCanvas: HTMLElement;
 
     constructor(svgCanvas: HTMLElement) {
-        super(svgCanvas.clientWidth, svgCanvas.clientHeight);
+        super();
 
         this.svgCanvas = svgCanvas;
     }

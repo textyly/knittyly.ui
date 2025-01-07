@@ -25,8 +25,8 @@ export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
 
     // #endregion
 
-    constructor(width: number, height: number) {
-        super(width, height);
+    constructor() {
+        super();
 
         const className = VirtualCanvas.name;
         this.messaging = new Messaging6(className);
@@ -62,7 +62,7 @@ export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
     public onUnhoverDot(listener: UnhoverDotListener): VoidUnsubscribe {
         return this.messaging.listenOnChannel6(listener);
     }
-    
+
     // #region abstract
 
     public abstract draw(): void;

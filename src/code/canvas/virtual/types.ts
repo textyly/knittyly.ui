@@ -3,10 +3,11 @@ import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 
 // #region types
 
+export type RadiusConfig = { value: number, step: number };
+export type SpacingConfig = { value: number, step: number };
+export type DotsConfig = { x: number, y: number, radius: RadiusConfig, spacing: SpacingConfig };
+
 export type Id = string;
-
-export type DotsConfig = { x: number, y: number, radius: number, spacing: number };
-
 export type Dot = { id: Id, x: number, y: number, radius: number };
 export type Line = { from: Dot, to: Dot, side: CanvasSide };
 export type Link = { id: Id, from: Dot, to: Dot, side: CanvasSide };

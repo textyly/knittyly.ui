@@ -20,7 +20,7 @@ export class CueCanvas extends Canvas {
     private readonly lines: Map<Id, SvgLine>;
 
     constructor(svgCanvas: SvgCanvas, virtualCanvas: IVirtualCanvas) {
-        super(virtualCanvas.size.width, virtualCanvas.size.height);
+        super();
 
         this.svgCanvas = svgCanvas;
         this.virtualCanvas = virtualCanvas;

@@ -23,7 +23,7 @@ export class UserInputThrottler extends TransparentCanvas {
     // #endregion
 
     constructor(private transparentCanvas: ITransparentCanvas) {
-        super(transparentCanvas.size.width, transparentCanvas.size.height);
+        super();
 
         this.groupedEvents = [];
 
