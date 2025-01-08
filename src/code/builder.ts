@@ -11,8 +11,8 @@ import { TransparentSvgCanvas } from "./canvas/html/svg/transparent.js";
 
 export class CanvasBuilder {
     public build(): IVirtualCanvas {
-        const userInputCanvasCapturer = this.buildUserInputCanvas();
-        const userInputCanvasThrottler = this.buildUserInputCanvasThrottler(userInputCanvasCapturer);
+        const userInputCanvas = this.buildUserInputCanvas();
+        const userInputCanvasThrottler = this.buildUserInputCanvasThrottler(userInputCanvas);
         const virtualCanvas = this.buildVirtualCanvas(userInputCanvasThrottler);
 
         this.buildDotCanvas(virtualCanvas);
@@ -39,7 +39,7 @@ export class CanvasBuilder {
     }
 
     private buildVirtualCanvas(userInputCanvasThrottler: ITransparentCanvas): IVirtualCanvas {
-        const dotsConfig = { x: 50, y: 50, radius: { value: 2, step: 0.2 }, spacing: { value: 20, step: 2 } };
+        const dotsConfig = { x: 30, y: 20, radius: { value: 2, step: 0.2 }, spacing: { value: 20, step: 2 } };
         const virtualCanvas = new VirtualDrawing(dotsConfig, userInputCanvasThrottler);
         virtualCanvas.initialize();
         return virtualCanvas;

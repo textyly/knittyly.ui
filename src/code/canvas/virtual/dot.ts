@@ -8,79 +8,71 @@ import { MouseLeftButtonDownEvent, MouseMoveEvent, } from "../transparent/types.
 export class VirtualDotCanvas extends VirtualCanvas {
     // #region fields
 
-    private readonly dotGrid: DotGrid;
-    private idGenerator: IdGenerator;
+    private readonly ids: IdGenerator;
+    private readonly virtualDotGrid: DotGrid;
 
     private clicked?: Id;
     private hovered?: { id: Id } & { originalDot: Id }; // TODO: ugly!!!
 
     // #endregion
 
-    constructor(config: DotsConfig) {
+    constructor(private config: DotsConfig) {
         super();
 
-        this.dotGrid = new DotGrid(config);
-
-        this.idGenerator = new IdGenerator();
+        this.ids = new IdGenerator();
+        this.virtualDotGrid = new DotGrid();
     }
 
     public get clickedDot(): Dot | undefined {
-        const clicked = this.dotGrid.getDotById(this.clicked!); // TODO: !!!
+        const clicked = this.virtualDotGrid.getDotById(this.clicked!); // TODO: !!!
         return clicked;
     }
 
     public get hoveredDot(): Dot | undefined {
-        const hovered = this.dotGrid.getDotById(this.hovered?.originalDot!); // TODO: !!!
+        const hovered = this.virtualDotGrid.getDotById(this.hovered?.originalDot!); // TODO: !!!
         return hovered;
     }
 
     public get(id: Id): Dot | undefined {
-        return this.dotGrid.getDotById(id);
+        return this.virtualDotGrid.getDotById(id);
     }
 
     // #region interface
 
     public draw(): void {
-        // TODO: !!!
-        const width = this.dotGrid.width;
-        const height = this.dotGrid.height;
-        const size = { width, height };
+        this.virtualDotGrid.draw(this.config.x, this.config.y, this.config.radius.value, this.config.spacing.value);
+    }
 
-        super.size = size;
-
-        [...this.dotGrid.dots.values()].forEach((dot) => {
-            const dotEvent = { dot };
-            super.invokeDrawDot(dotEvent);
-        });
+    protected override initializeCore(): void {
+        this.virtualDotGrid.onSizeChange((size) => super.size = size);
+        this.virtualDotGrid.onDrawDot((dot) => super.invokeDrawDot(dot));
     }
 
     public invokeZoomIn(): void {
-        const x = this.dotGrid.x;
-        const y = this.dotGrid.y;
-        const radius = this.dotGrid.radius + this.dotGrid.config.radius.step;
-        const spacing = this.dotGrid.spacing + this.dotGrid.config.spacing.step;
+        const x = this.virtualDotGrid.dotsX;
+        const y = this.virtualDotGrid.dotsY;
+        const radius = this.virtualDotGrid.radius + this.config.radius.step;
+        const spacing = this.virtualDotGrid.spacing + this.config.spacing.step;
 
-        this.dotGrid.recalculate(x, y, radius, spacing);
-        this.draw();
+        this.virtualDotGrid.draw(x, y, radius, spacing);
     }
 
     public invokeZoomOut(): void {
-        const x = this.dotGrid.x;
-        const y = this.dotGrid.y;
-        const radius = this.dotGrid.radius - this.dotGrid.config.radius.step;
-        const spacing = this.dotGrid.spacing - this.dotGrid.config.spacing.step;
+        const x = this.virtualDotGrid.dotsX;
+        const y = this.virtualDotGrid.dotsY;
+        const radius = this.virtualDotGrid.radius - this.config.radius.step;
+        const spacing = this.virtualDotGrid.spacing - this.config.spacing.step;
 
-        this.dotGrid.recalculate(x, y, radius, spacing);
-        this.draw();
+        this.virtualDotGrid.draw(x, y, radius, spacing);
     }
 
     // TODO: ugly code!!!
     public invokeMouseMove(event: MouseMoveEvent): void {
         const position = event.position;
-        const dot = this.dotGrid.getDotByCoordinates(position.x, position.y);
+        const dot = this.virtualDotGrid.getDotByCoordinates(position.x, position.y);
         if (dot) {
             if (dot.id !== this.hovered?.id && dot.id !== this.hovered?.originalDot) {
-                const id = this.idGenerator.next();
+                const id = this.ids.next();
                 this.hovered = { id, originalDot: dot.id };
                 const dotHoveredEvent = { dot: { id: this.hovered.id, x: dot.x, y: dot.y, radius: dot.radius + 2 } };
                 super.invokeHoverDot(dotHoveredEvent);
@@ -95,7 +87,7 @@ export class VirtualDotCanvas extends VirtualCanvas {
 
     public invokeMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
         const position = event.position;
-        const dot = this.dotGrid.getDotByCoordinates(position.x, position.y);
+        const dot = this.virtualDotGrid.getDotByCoordinates(position.x, position.y);
         if (dot) {
             this.clicked = dot.id;
         }
