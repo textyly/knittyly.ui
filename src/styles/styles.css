@@ -1,3 +1,31 @@
 body {
-    background-color: #ffffff;
+  margin: 0;
+}
+
+#container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+#canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+#svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+
+}
+
+#plot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
 }
