@@ -53,12 +53,12 @@ export interface IVoidMessaging extends IMessaging {
      * 
      * @param listener 
      */
-    listenOnChannel(listener: VoidListener): VoidUnsubscribe;
+    listenOnChannel0(listener: VoidListener): VoidUnsubscribe;
 
     /**
      * 
      */
-    sendToChannel(): void;
+    sendToChannel0(): void;
 }
 
 /**

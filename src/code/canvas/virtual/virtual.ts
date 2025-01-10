@@ -1,9 +1,9 @@
 
 import { Size } from "../types.js";
-import { VirtualCanvas } from "./base.js";
+import { VirtualCanvasBase } from "./base.js";
 import { VirtualDotCanvas } from "./dot.js";
 import { VirtualLineCanvas } from "./line.js";
-import { ITransparentCanvas, MouseMoveEvent } from "../transparent/types.js";
+import { IInputCanvas, MouseMoveEvent } from "../input/types.js";
 import {
     DotsConfig,
     DrawDotEvent,
@@ -14,19 +14,19 @@ import {
     UnhoverDotEvent
 } from "./types.js";
 
-export class VirtualDrawing extends VirtualCanvas {
+export class VirtualCanvas extends VirtualCanvasBase {
     // #region fields 
 
-    private transparentCanvas: ITransparentCanvas
+    private input: IInputCanvas
     private virtualDotCanvas: VirtualDotCanvas;
     private virtualLineCanvas: VirtualLineCanvas;
 
     //#endregion
 
-    constructor(config: DotsConfig, transparentCanvas: ITransparentCanvas) {
+    constructor(config: DotsConfig, input: IInputCanvas) {
         super();
 
-        this.transparentCanvas = transparentCanvas;
+        this.input = input;
         this.virtualDotCanvas = new VirtualDotCanvas(config);
         this.virtualLineCanvas = new VirtualLineCanvas(this.virtualDotCanvas);
     }
@@ -51,7 +51,7 @@ export class VirtualDrawing extends VirtualCanvas {
 
     protected override sizeChangeCore(): void {
         const size = super.size;
-        this.transparentCanvas.size = size;
+        this.input.size = size;
         this.virtualDotCanvas.size = size;
         this.virtualLineCanvas.size = size;
     }
@@ -127,16 +127,16 @@ export class VirtualDrawing extends VirtualCanvas {
     // #region methods
 
     private subscribe(): void {
-        const zoomInUn = this.transparentCanvas.onZoomIn(this.handleZoomIn.bind(this));
+        const zoomInUn = this.input.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(zoomInUn);
 
-        const zoomOutUn = this.transparentCanvas.onZoomOut(this.handleZoomOut.bind(this));
+        const zoomOutUn = this.input.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
 
-        const mouseMoveUn = this.transparentCanvas.onMouseMove(this.handleMouseMove.bind(this));
+        const mouseMoveUn = this.input.onMouseMove(this.handleMouseMove.bind(this));
         super.registerUn(mouseMoveUn);
 
-        const mouseLeftButtonDownUn = this.transparentCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
+        const mouseLeftButtonDownUn = this.input.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
         super.registerUn(mouseLeftButtonDownUn);
 
         const drawDotUn = this.virtualDotCanvas.onDrawDot(this.handleDrawDot.bind(this));

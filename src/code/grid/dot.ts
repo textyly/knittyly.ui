@@ -1,11 +1,11 @@
-import { Canvas } from "../canvas/base.js";
-import { SizeChangeEvent, SizeChangeListener } from "../canvas/transparent/types.js";
-import { ICanvas, Size } from "../canvas/types.js";
-import { Dot, DotsConfig, DrawDotEvent, DrawDotListener, Id } from "../canvas/virtual/types.js";
-import { Messaging1, Messaging2 } from "../messaging/impl.js";
-import { IMessaging1, IMessaging2 } from "../messaging/types.js";
+import { Size } from "../canvas/types.js";
 import { VoidUnsubscribe } from "../types.js";
+import { Messaging2 } from "../messaging/impl.js";
+import { IMessaging2 } from "../messaging/types.js";
 import { IdGenerator } from "../utilities/generator.js";
+import { Dot, DrawDotEvent, DrawDotListener, Id } from "../canvas/virtual/types.js";
+import { SizeChangeEvent, SizeChangeListener } from "../canvas/input/types.js";
+
 
 interface IVirtualDotGrid {
     get size(): Size;
@@ -22,7 +22,7 @@ interface IVirtualDotGrid {
     getDotById(id: string): Dot | undefined;
 }
 
-export class DotGrid implements IVirtualDotGrid {
+export class VirtualDotGrid implements IVirtualDotGrid {
     private readonly ids: IdGenerator;
     private readonly messaging: IMessaging2<SizeChangeEvent, DrawDotEvent>;
 
@@ -36,7 +36,7 @@ export class DotGrid implements IVirtualDotGrid {
     constructor() {
         this.dots = new Map();
         this.ids = new IdGenerator();
-        this.messaging = new Messaging2(DotGrid.name);
+        this.messaging = new Messaging2(VirtualDotGrid.name);
         this.messaging.start();
     }
 

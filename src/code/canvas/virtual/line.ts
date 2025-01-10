@@ -1,10 +1,10 @@
-import { VirtualCanvas } from "./base.js";
+import { VirtualCanvasBase } from "./base.js";
 import { VirtualDotCanvas } from "./dot.js";
 import { CanvasSide, Line, Link } from "./types.js";
 import { IdGenerator } from "../../utilities/generator.js";
-import { MouseMoveEvent, MouseLeftButtonDownEvent } from "../transparent/types.js";
+import { MouseMoveEvent, MouseLeftButtonDownEvent } from "../input/types.js";
 
-export class VirtualLineCanvas extends VirtualCanvas {
+export class VirtualLineCanvas extends VirtualCanvasBase {
     // #region fields
 
     private dotVirtualCanvas: VirtualDotCanvas;

@@ -1,5 +1,5 @@
 import { ErrorListener, Unsubscribe } from "../types.js";
-import { MessagingBaseValidator } from "../validators/utilities/messaging/base.js";
+import { MessagingBaseValidator } from "../validators/messaging/base.js";
 import {
     IMessaging,
     ChannelListeners,

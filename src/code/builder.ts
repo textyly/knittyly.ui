@@ -1,13 +1,13 @@
-import { UserInputThrottler } from "./canvas/transparent/throttler.js";
-import { UserInputCanvas } from "./canvas/transparent/userInput.js";
-import { ITransparentCanvas } from "./canvas/transparent/types.js";
-import { VirtualDrawing } from "./canvas/virtual/drawing.js";
-import { CueCanvas } from "./canvas/visible/cue/base.js";
+import { InputCanvasThrottler } from "./canvas/input/throttler.js";
+import { InputCanvas } from "./canvas/input/input.js";
+import { IInputCanvas } from "./canvas/input/types.js";
+import { VirtualCanvas } from "./canvas/virtual/virtual.js";
+import { DynamicCanvas } from "./canvas/drawing/dynamic/dynamic.js";
 import { IVirtualCanvas } from "./canvas/virtual/types.js";
-import { RasterCanvas } from "./canvas/html/raster/raster.js";
-import { SvgCanvas } from "./canvas/html/svg/svg.js";
-import { FrontDotCanvas } from "./canvas/visible/dot/front.js";
-import { TransparentSvgCanvas } from "./canvas/html/svg/transparent.js";
+import { TransparentCanvas } from "./canvas/input/transparent.js";
+import { RasterCanvas } from "./canvas/drawing/raster/raster.js";
+import { FrontStaticCanvas } from "./canvas/drawing/static/front.js";
+import { SvgCanvas } from "./canvas/drawing/svg/svg.js";
 
 export class CanvasBuilder {
     public build(): IVirtualCanvas {
@@ -21,26 +21,26 @@ export class CanvasBuilder {
         return virtualCanvas;
     }
 
-    private buildUserInputCanvas(): ITransparentCanvas {
+    private buildUserInputCanvas(): IInputCanvas {
         const svgCanvas = document.getElementById("plot") as HTMLElement;
-        const wrapper = new TransparentSvgCanvas(svgCanvas);
+        const wrapper = new TransparentCanvas(svgCanvas);
         wrapper.initialize();
 
-        const canvas = new UserInputCanvas(wrapper);
+        const canvas = new InputCanvas(wrapper);
         canvas.initialize();
 
         return canvas;
     }
 
-    private buildUserInputCanvasThrottler(userInputCanvasCapturer: ITransparentCanvas): ITransparentCanvas {
-        const headlessCanvas = new UserInputThrottler(userInputCanvasCapturer);
+    private buildUserInputCanvasThrottler(userInputCanvasCapturer: IInputCanvas): IInputCanvas {
+        const headlessCanvas = new InputCanvasThrottler(userInputCanvasCapturer);
         headlessCanvas.initialize();
         return headlessCanvas;
     }
 
-    private buildVirtualCanvas(userInputCanvasThrottler: ITransparentCanvas): IVirtualCanvas {
+    private buildVirtualCanvas(userInputCanvasThrottler: IInputCanvas): IVirtualCanvas {
         const dotsConfig = { x: 30, y: 20, radius: { value: 2, step: 0.2 }, spacing: { value: 20, step: 2 } };
-        const virtualCanvas = new VirtualDrawing(dotsConfig, userInputCanvasThrottler);
+        const virtualCanvas = new VirtualCanvas(dotsConfig, userInputCanvasThrottler);
         virtualCanvas.initialize();
         return virtualCanvas;
     }
@@ -50,7 +50,7 @@ export class CanvasBuilder {
         const wrapper = new RasterCanvas(htmlCanvas);
         wrapper.initialize();
 
-        const gridCanvas = new FrontDotCanvas(wrapper, virtualCanvas);
+        const gridCanvas = new FrontStaticCanvas(wrapper, virtualCanvas);
         gridCanvas.initialize();
     }
 
@@ -59,7 +59,7 @@ export class CanvasBuilder {
         const wrapper = new SvgCanvas(svgCanvas);
         wrapper.initialize();
 
-        const cueCanvas = new CueCanvas(wrapper, virtualCanvas);
+        const cueCanvas = new DynamicCanvas(wrapper, virtualCanvas);
         cueCanvas.initialize();
     }
 }

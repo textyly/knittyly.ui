@@ -1,4 +1,4 @@
-import { Canvas } from "../base.js";
+import { CanvasBase } from "../base.js";
 import { Messaging6 } from "../../messaging/impl.js";
 import { IMessaging6 } from "../../messaging/types.js";
 import { VoidListener, VoidUnsubscribe } from "../../types.js";
@@ -18,7 +18,7 @@ import {
     RemoveLinkEvent
 } from "./types.js";
 
-export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
+export abstract class VirtualCanvasBase extends CanvasBase implements IVirtualCanvas {
     // #region fields
 
     private readonly messaging: IMessaging6<DrawDotEvent, DrawLineEvent, DrawLinkEvent, RemoveLinkEvent, HoverDotEvent, UnhoverDotEvent>;
@@ -28,7 +28,7 @@ export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
     constructor() {
         super();
 
-        const className = VirtualCanvas.name;
+        const className = VirtualCanvasBase.name;
         this.messaging = new Messaging6(className);
         this.messaging.start();
     }
@@ -36,7 +36,7 @@ export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
     // #region interface
 
     public onRedraw(listener: VoidListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel(listener);
+        return this.messaging.listenOnChannel0(listener);
     }
 
     public onDrawDot(listener: DrawDotListener): VoidUnsubscribe {
@@ -87,7 +87,7 @@ export abstract class VirtualCanvas extends Canvas implements IVirtualCanvas {
     // #region events
 
     protected invokeRedraw(): void {
-        this.messaging.sendToChannel();
+        this.messaging.sendToChannel0();
     }
 
     protected invokeDrawDot(event: DrawDotEvent): void {

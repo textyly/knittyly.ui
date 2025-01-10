@@ -1,6 +1,6 @@
-import { Canvas } from "../../base.js";
+import { CanvasBase } from "../../base.js";
 
-export abstract class SvgCanvasBase extends Canvas {
+export abstract class SvgCanvasBase extends CanvasBase {
     protected svgCanvas: HTMLElement;
 
     constructor(svgCanvas: HTMLElement) {

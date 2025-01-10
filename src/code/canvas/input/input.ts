@@ -1,37 +1,34 @@
-import { Size } from "../types.js";
-import { TransparentCanvas } from "./base.js";
-import { ITransparentSvgCanvas } from "../html/types.js";
-import { WheelEvent, MouseMoveEvent, MouseButtonDownEvent } from "../html/types.js";
+import { InputCanvasBase } from "./base.js";
+import { ITransparentCanvas, MouseButtonDownEvent, MouseMoveEvent, WheelEvent } from "./types.js";
 
-export class UserInputCanvas extends TransparentCanvas {
+export class InputCanvas extends InputCanvasBase {
 
     //#region fields
 
-    private transperantSvgCanvas: ITransparentSvgCanvas;
+    private transparentCanvas: ITransparentCanvas;
 
     //#endregion
 
-    constructor(transperantSvgCanvas: ITransparentSvgCanvas) {
+    constructor(transparentCanvas: ITransparentCanvas) {
         super();
-
-        this.transperantSvgCanvas = transperantSvgCanvas;
+        this.transparentCanvas = transparentCanvas;
     }
 
     // #region abstract overrides
 
     protected override initializeCore(): void {
-        const wheelChangeUn = this.transperantSvgCanvas.onWheelChange(this.handleWheelChange.bind(this));
+        const wheelChangeUn = this.transparentCanvas.onWheelChange(this.handleWheelChange.bind(this));
         super.registerUn(wheelChangeUn);
 
-        const mouseMoveUn = this.transperantSvgCanvas.onMouseMove(this.handleMouseMove.bind(this));
+        const mouseMoveUn = this.transparentCanvas.onMouseMove(this.handleMouseMove.bind(this));
         super.registerUn(mouseMoveUn);
 
-        const mouseButtonDownUn = this.transperantSvgCanvas.onMouseButtonDown(this.handleMouseButtonDown.bind(this));
+        const mouseButtonDownUn = this.transparentCanvas.onMouseButtonDown(this.handleMouseButtonDown.bind(this));
         super.registerUn(mouseButtonDownUn);
     }
 
     protected override sizeChangeCore(): void {
-        this.transperantSvgCanvas.size = super.size;
+        this.transparentCanvas.size = super.size;
     }
 
     protected override disposeCore(): void {

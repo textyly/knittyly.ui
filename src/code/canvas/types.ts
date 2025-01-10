@@ -1,5 +1,5 @@
 import { VoidUnsubscribe } from "../types";
-import { SizeChangeListener } from "./transparent/types";
+import { SizeChangeListener } from "./input/types";
 
 export type Size = { width: number, height: number };
 

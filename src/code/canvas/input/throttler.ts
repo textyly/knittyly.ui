@@ -1,58 +1,59 @@
-import { TransparentCanvas } from "./base.js";
-import { HeadlessCanvasThrottlerValidator } from "../../validators/canvas/headless/throttler.js";
+import { InputCanvasBase } from "./base.js";
+import { InputCanvasThrottlerValidator } from "../../validators/canvas/input/throttler.js";
 import {
     CanvasEventType,
-    ITransparentCanvas,
+    IInputCanvas,
     MouseLeftButtonDownEvent,
     MouseMoveEvent,
     Position
 } from "./types.js";
-import { Size } from "../types.js";
 
-export class UserInputThrottler extends TransparentCanvas {
+export class InputCanvasThrottler extends InputCanvasBase {
 
     // #region fields
 
+    private inputCanvas: IInputCanvas;
     private groupedEvents: Array<CanvasEvent>;
 
     private timerInterval: number;
     private timerId?: number;
 
-    private validator: HeadlessCanvasThrottlerValidator;
+    private validator: InputCanvasThrottlerValidator;
 
     // #endregion
 
-    constructor(private transparentCanvas: ITransparentCanvas) {
+    constructor(inputCanvas: IInputCanvas) {
         super();
 
+        this.inputCanvas = inputCanvas;
         this.groupedEvents = [];
 
         this.timerInterval = 50;
 
-        const className = UserInputThrottler.name;
-        this.validator = new HeadlessCanvasThrottlerValidator(className);
+        const className = InputCanvasThrottler.name;
+        this.validator = new InputCanvasThrottlerValidator(className);
     }
 
     // #region abstract overrides 
 
     protected override initializeCore(): void {
-        const zoomInUn = this.transparentCanvas.onZoomIn(this.handleZoomIn.bind(this));
+        const zoomInUn = this.inputCanvas.onZoomIn(this.handleZoomIn.bind(this));
         super.registerUn(zoomInUn);
 
-        const zoomOutUn = this.transparentCanvas.onZoomOut(this.handleZoomOut.bind(this));
+        const zoomOutUn = this.inputCanvas.onZoomOut(this.handleZoomOut.bind(this));
         super.registerUn(zoomOutUn);
 
-        const mouseMoveUn = this.transparentCanvas.onMouseMove(this.handleMouseMove.bind(this));
+        const mouseMoveUn = this.inputCanvas.onMouseMove(this.handleMouseMove.bind(this));
         super.registerUn(mouseMoveUn);
 
-        const mouseLeftButtonDown = this.transparentCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
+        const mouseLeftButtonDown = this.inputCanvas.onMouseLeftButtonDown(this.handleMouseLeftButtonDown.bind(this));
         super.registerUn(mouseLeftButtonDown);
 
         this.timerId = setInterval(this.handleTimer.bind(this), this.timerInterval);
     }
 
     protected override sizeChangeCore(): void {
-        this.transparentCanvas.size = super.size;
+        this.inputCanvas.size = super.size;
     }
 
     protected override disposeCore(): void {

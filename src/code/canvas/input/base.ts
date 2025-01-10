@@ -1,9 +1,9 @@
+import { CanvasBase } from "../base.js";
+import { VoidUnsubscribe } from "../../types.js";
 import { Messaging4 } from "../../messaging/impl.js";
 import { IMessaging4 } from "../../messaging/types.js";
-import { VoidUnsubscribe } from "../../types.js";
-import { Canvas } from "../base.js";
 import {
-    ITransparentCanvas,
+    IInputCanvas,
     MouseLeftButtonDownEvent,
     MouseMoveEvent,
     ZoomInListener,
@@ -15,7 +15,7 @@ import {
 } from "./types.js";
 
 
-export abstract class TransparentCanvas extends Canvas implements ITransparentCanvas {
+export abstract class InputCanvasBase extends CanvasBase implements IInputCanvas {
     // #region fields
 
     private readonly messaging: IMessaging4<ZoomInEvent, ZoomOutEvent, MouseMoveEvent, MouseLeftButtonDownEvent>;
@@ -25,7 +25,7 @@ export abstract class TransparentCanvas extends Canvas implements ITransparentCa
     constructor() {
         super();
 
-        const className = TransparentCanvas.name;
+        const className = InputCanvasBase.name;
         this.messaging = new Messaging4(className);
         this.messaging.start();
     }

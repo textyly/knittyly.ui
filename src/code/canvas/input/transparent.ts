@@ -1,20 +1,20 @@
-import { SvgCanvasBase } from "./base.js";
-import { VoidUnsubscribe } from "../../../types.js";
-import { IMessaging3 } from "../../../messaging/types.js";
-import { Messaging3 } from "../../../messaging/impl.js";
-import { MouseEventHandler, Position, WheelChangeHandler } from "../../transparent/types.js";
+import { VoidUnsubscribe } from "../../types.js";
+import { Messaging3 } from "../../messaging/impl.js";
+import { SvgCanvasBase } from "../drawing/svg/base.js";
+import { IMessaging3 } from "../../messaging/types.js";
+import { MouseEventHandler, Position, WheelChangeHandler } from "./types.js";
 import {
     HtmlCanvasEvents,
-    ITransparentSvgCanvas,
+    ITransparentCanvas,
     MouseButtonDownListener,
     MouseMoveListener,
     WheelListener,
     WheelEvent,
     MouseMoveEvent,
     MouseButtonDownEvent
-} from "../types.js";
+} from "./types.js";
 
-export class TransparentSvgCanvas extends SvgCanvasBase implements ITransparentSvgCanvas {
+export class TransparentCanvas extends SvgCanvasBase implements ITransparentCanvas {
     private readonly messaging: IMessaging3<WheelEvent, MouseMoveEvent, MouseButtonDownEvent>;
 
     private readonly wheelChangeHandler: WheelChangeHandler;
@@ -24,7 +24,7 @@ export class TransparentSvgCanvas extends SvgCanvasBase implements ITransparentS
     constructor(svgCanvas: HTMLElement) {
         super(svgCanvas);
 
-        this.messaging = new Messaging3(TransparentSvgCanvas.name);
+        this.messaging = new Messaging3(TransparentCanvas.name);
 
         this.wheelChangeHandler = this.handleWheelChange.bind(this);
         this.mouseMoveHandler = this.handleMouseMove.bind(this);

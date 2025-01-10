@@ -20,11 +20,11 @@ export class VoidMessaging extends Messaging implements IVoidMessaging {
         super.create(this.channel0);
     }
 
-    public listenOnChannel(listener: VoidListener): VoidUnsubscribe {
+    public listenOnChannel0(listener: VoidListener): VoidUnsubscribe {
         return super.on(this.channel0, listener);
     }
 
-    public sendToChannel(): void {
+    public sendToChannel0(): void {
         super.send(this.channel0, {});
     }
 }

@@ -1,7 +1,7 @@
-import { Canvas } from "../../base.js";
+import { CanvasBase } from "../../base.js";
 import { Dot, Line } from "../../virtual/types.js";
 
-export class RasterCanvas extends Canvas {
+export class RasterCanvas extends CanvasBase {
     private readonly context: CanvasRenderingContext2D;
 
     constructor(private htmlCanvas: HTMLCanvasElement) {

@@ -3,9 +3,9 @@ import { Messaging1 } from "../messaging/impl.js";
 import { IMessaging1 } from "../messaging/types.js";
 import { VoidUnsubscribe } from "../types.js";
 import { SizeValidator } from "../validators/canvas/size.js";
-import { SizeChangeEvent, SizeChangeListener } from "./transparent/types.js";
+import { SizeChangeEvent, SizeChangeListener } from "./input/types.js";
 
-export abstract class Canvas implements ICanvas {
+export abstract class CanvasBase implements ICanvas {
     // #region fields
 
     private initialized: boolean;
@@ -27,7 +27,7 @@ export abstract class Canvas implements ICanvas {
 
         this.sizeValidator = new SizeValidator();
 
-        const className = Canvas.name;
+        const className = CanvasBase.name;
         this.msg = new Messaging1(className);
         this.msg.start();
 

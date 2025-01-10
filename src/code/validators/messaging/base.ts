@@ -1,5 +1,5 @@
-import { Channel, ChannelData, ChannelListener } from "../../../messaging/types.js";
-import { ClassValidator } from "../../class.js";
+import { Channel, ChannelData, ChannelListener } from "../../messaging/types.js";
+import { ClassValidator } from "../class.js";
 
 export class MessagingBaseValidator extends ClassValidator {
     constructor(name: string) {

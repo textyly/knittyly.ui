@@ -1,6 +1,6 @@
-import { Canvas } from "../../base.js";
-import { SvgCanvas } from "../../html/svg/svg.js";
-import { SvgDot, SvgLine } from "../../html/types.js";
+import { CanvasBase } from "../../base.js";
+import { SvgCanvas } from "../svg/svg.js";
+import { SvgDot, SvgLine } from "../types.js";
 import { Size } from "../../types.js";
 import {
     Id,
@@ -12,7 +12,7 @@ import {
     RemoveLinkEvent
 } from "../../virtual/types.js";
 
-export class CueCanvas extends Canvas {
+export class DynamicCanvas extends CanvasBase {
     protected readonly svgCanvas: SvgCanvas;
     protected readonly virtualCanvas: IVirtualCanvas;
 
