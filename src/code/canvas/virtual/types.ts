@@ -1,4 +1,4 @@
-import { ICanvas } from "../types.js";
+import { ICanvas, Size } from "../types.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 
 // #region types
@@ -33,6 +33,20 @@ export type UnhoverDotListener = Listener<UnhoverDotEvent>;
 // #endregion
 
 // #region interfaces
+
+export interface IDotVirtualCanvas extends ICanvas {
+    get size(): Size;
+    get dotsX(): number;
+    get dotsY(): number;
+    get radius(): number;
+    get spacing(): number;
+
+    onDrawDot(listener: DrawDotListener): VoidUnsubscribe;
+
+    draw(dotsX: number, dotsY: number, radius: number, spacing: number): void;
+    getDotByCoordinates(x: number, y: number): Dot | undefined;
+    getDotById(id: string): Dot | undefined;
+}
 
 export interface IVirtualCanvas extends ICanvas {
     onRedraw(listener: VoidListener): VoidUnsubscribe;

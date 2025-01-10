@@ -9,7 +9,7 @@ export class StaticVirtualCanvas extends VirtualCanvasBase {
     // #region fields
 
     private readonly ids: IdGenerator;
-    private readonly virtualDotGrid: DotVirtualCanvas;
+    private readonly dotVirtualCanvas: DotVirtualCanvas;
 
     private clicked?: Id;
     private hovered?: { id: Id } & { originalDot: Id }; // TODO: ugly!!!
@@ -20,56 +20,56 @@ export class StaticVirtualCanvas extends VirtualCanvasBase {
         super();
 
         this.ids = new IdGenerator();
-        this.virtualDotGrid = new DotVirtualCanvas();
+        this.dotVirtualCanvas = new DotVirtualCanvas();
     }
 
     public get clickedDot(): Dot | undefined {
-        const clicked = this.virtualDotGrid.getDotById(this.clicked!); // TODO: !!!
+        const clicked = this.dotVirtualCanvas.getDotById(this.clicked!); // TODO: !!!
         return clicked;
     }
 
     public get hoveredDot(): Dot | undefined {
-        const hovered = this.virtualDotGrid.getDotById(this.hovered?.originalDot!); // TODO: !!!
+        const hovered = this.dotVirtualCanvas.getDotById(this.hovered?.originalDot!); // TODO: !!!
         return hovered;
     }
 
     public get(id: Id): Dot | undefined {
-        return this.virtualDotGrid.getDotById(id);
+        return this.dotVirtualCanvas.getDotById(id);
     }
 
     // #region interface
 
     public draw(): void {
-        this.virtualDotGrid.draw(this.config.x, this.config.y, this.config.radius.value, this.config.spacing.value);
+        this.dotVirtualCanvas.draw(this.config.x, this.config.y, this.config.radius.value, this.config.spacing.value);
     }
 
     protected override initializeCore(): void {
-        this.virtualDotGrid.onSizeChange((size) => super.size = size);
-        this.virtualDotGrid.onDrawDot((dot) => super.invokeDrawDot(dot));
+        this.dotVirtualCanvas.onSizeChange((size) => super.size = size);
+        this.dotVirtualCanvas.onDrawDot((dot) => super.invokeDrawDot(dot));
     }
 
     public invokeZoomIn(): void {
-        const x = this.virtualDotGrid.dotsX;
-        const y = this.virtualDotGrid.dotsY;
-        const radius = this.virtualDotGrid.radius + this.config.radius.step;
-        const spacing = this.virtualDotGrid.spacing + this.config.spacing.step;
+        const x = this.dotVirtualCanvas.dotsX;
+        const y = this.dotVirtualCanvas.dotsY;
+        const radius = this.dotVirtualCanvas.radius + this.config.radius.step;
+        const spacing = this.dotVirtualCanvas.spacing + this.config.spacing.step;
 
-        this.virtualDotGrid.draw(x, y, radius, spacing);
+        this.dotVirtualCanvas.draw(x, y, radius, spacing);
     }
 
     public invokeZoomOut(): void {
-        const x = this.virtualDotGrid.dotsX;
-        const y = this.virtualDotGrid.dotsY;
-        const radius = this.virtualDotGrid.radius - this.config.radius.step;
-        const spacing = this.virtualDotGrid.spacing - this.config.spacing.step;
+        const x = this.dotVirtualCanvas.dotsX;
+        const y = this.dotVirtualCanvas.dotsY;
+        const radius = this.dotVirtualCanvas.radius - this.config.radius.step;
+        const spacing = this.dotVirtualCanvas.spacing - this.config.spacing.step;
 
-        this.virtualDotGrid.draw(x, y, radius, spacing);
+        this.dotVirtualCanvas.draw(x, y, radius, spacing);
     }
 
     // TODO: ugly code!!!
     public invokeMouseMove(event: MouseMoveEvent): void {
         const position = event.position;
-        const dot = this.virtualDotGrid.getDotByCoordinates(position.x, position.y);
+        const dot = this.dotVirtualCanvas.getDotByCoordinates(position.x, position.y);
         if (dot) {
             if (dot.id !== this.hovered?.id && dot.id !== this.hovered?.originalDot) {
                 const id = this.ids.next();
@@ -87,7 +87,7 @@ export class StaticVirtualCanvas extends VirtualCanvasBase {
 
     public invokeMouseLeftButtonDown(event: MouseLeftButtonDownEvent): void {
         const position = event.position;
-        const dot = this.virtualDotGrid.getDotByCoordinates(position.x, position.y);
+        const dot = this.dotVirtualCanvas.getDotByCoordinates(position.x, position.y);
         if (dot) {
             this.clicked = dot.id;
         }

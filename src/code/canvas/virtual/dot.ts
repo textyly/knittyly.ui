@@ -1,26 +1,10 @@
-import { ICanvas, Size } from "../types.js";
+import { Size } from "../types.js";
+import { CanvasBase } from "../base.js";
 import { VoidUnsubscribe } from "../../types.js";
 import { Messaging1 } from "../../messaging/impl.js";
 import { IMessaging1 } from "../../messaging/types.js";
 import { IdGenerator } from "../../utilities/generator.js";
-import { Dot, DrawDotEvent, DrawDotListener, Id } from "./types.js";
-import { SizeChangeEvent, SizeChangeListener } from "../input/types.js";
-import { CanvasBase } from "../base.js";
-
-
-interface IDotVirtualCanvas extends ICanvas {
-    get size(): Size;
-    get dotsX(): number;
-    get dotsY(): number;
-    get radius(): number;
-    get spacing(): number;
-
-    onDrawDot(listener: DrawDotListener): VoidUnsubscribe;
-
-    draw(dotsX: number, dotsY: number, radius: number, spacing: number): void;
-    getDotByCoordinates(x: number, y: number): Dot | undefined;
-    getDotById(id: string): Dot | undefined;
-}
+import { Dot, DrawDotEvent, DrawDotListener, Id, IDotVirtualCanvas } from "./types.js";
 
 export class DotVirtualCanvas extends CanvasBase implements IDotVirtualCanvas {
     private readonly ids: IdGenerator;
