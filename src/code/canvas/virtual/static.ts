@@ -5,7 +5,7 @@ import { IdGenerator } from "../../utilities/generator.js";
 import { MouseLeftButtonDownEvent, MouseMoveEvent, } from "../input/types.js";
 
 // TODO: ugly code!!!
-export class VirtualDotCanvas extends VirtualCanvasBase {
+export class StaticVirtualCanvas extends VirtualCanvasBase {
     // #region fields
 
     private readonly ids: IdGenerator;

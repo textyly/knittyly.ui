@@ -1,13 +1,13 @@
 import { VirtualCanvasBase } from "./base.js";
-import { VirtualDotCanvas } from "./dot.js";
+import { StaticVirtualCanvas } from "./static.js";
 import { CanvasSide, Line, Link } from "./types.js";
 import { IdGenerator } from "../../utilities/generator.js";
 import { MouseMoveEvent, MouseLeftButtonDownEvent } from "../input/types.js";
 
-export class VirtualLineCanvas extends VirtualCanvasBase {
+export class DynamicVirtualCanvas extends VirtualCanvasBase {
     // #region fields
 
-    private dotVirtualCanvas: VirtualDotCanvas;
+    private dotVirtualCanvas: StaticVirtualCanvas;
 
     private link?: Link;
     private lines: Array<Line>;
@@ -17,7 +17,7 @@ export class VirtualLineCanvas extends VirtualCanvasBase {
 
     // #endregion
 
-    constructor(virtualDotCanvas: VirtualDotCanvas) {
+    constructor(virtualDotCanvas: StaticVirtualCanvas) {
         super();
 
         this.dotVirtualCanvas = virtualDotCanvas;

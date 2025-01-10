@@ -1,8 +1,8 @@
 
 import { Size } from "../types.js";
 import { VirtualCanvasBase } from "./base.js";
-import { VirtualDotCanvas } from "./dot.js";
-import { VirtualLineCanvas } from "./line.js";
+import { StaticVirtualCanvas } from "./static.js";
+import { DynamicVirtualCanvas } from "./dynamic.js";
 import { IInputCanvas, MouseMoveEvent } from "../input/types.js";
 import {
     DotsConfig,
@@ -18,8 +18,8 @@ export class VirtualCanvas extends VirtualCanvasBase {
     // #region fields 
 
     private input: IInputCanvas
-    private virtualDotCanvas: VirtualDotCanvas;
-    private virtualLineCanvas: VirtualLineCanvas;
+    private virtualDotCanvas: StaticVirtualCanvas;
+    private virtualLineCanvas: DynamicVirtualCanvas;
 
     //#endregion
 
@@ -27,8 +27,8 @@ export class VirtualCanvas extends VirtualCanvasBase {
         super();
 
         this.input = input;
-        this.virtualDotCanvas = new VirtualDotCanvas(config);
-        this.virtualLineCanvas = new VirtualLineCanvas(this.virtualDotCanvas);
+        this.virtualDotCanvas = new StaticVirtualCanvas(config);
+        this.virtualLineCanvas = new DynamicVirtualCanvas(this.virtualDotCanvas);
     }
 
     // #region interface
