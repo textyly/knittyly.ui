@@ -1,5 +1,5 @@
 import { VirtualCanvasBase } from "./base.js";
-import { VirtualDotGrid } from "../../grid/dot.js";
+import { DotVirtualCanvas } from "./dot.js";
 import { Dot, DotsConfig, Id } from "./types.js";
 import { IdGenerator } from "../../utilities/generator.js";
 import { MouseLeftButtonDownEvent, MouseMoveEvent, } from "../input/types.js";
@@ -9,7 +9,7 @@ export class StaticVirtualCanvas extends VirtualCanvasBase {
     // #region fields
 
     private readonly ids: IdGenerator;
-    private readonly virtualDotGrid: VirtualDotGrid;
+    private readonly virtualDotGrid: DotVirtualCanvas;
 
     private clicked?: Id;
     private hovered?: { id: Id } & { originalDot: Id }; // TODO: ugly!!!
@@ -20,7 +20,7 @@ export class StaticVirtualCanvas extends VirtualCanvasBase {
         super();
 
         this.ids = new IdGenerator();
-        this.virtualDotGrid = new VirtualDotGrid();
+        this.virtualDotGrid = new DotVirtualCanvas();
     }
 
     public get clickedDot(): Dot | undefined {

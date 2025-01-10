@@ -1,20 +1,20 @@
-import { Size } from "../canvas/types.js";
-import { VoidUnsubscribe } from "../types.js";
-import { Messaging2 } from "../messaging/impl.js";
-import { IMessaging2 } from "../messaging/types.js";
-import { IdGenerator } from "../utilities/generator.js";
-import { Dot, DrawDotEvent, DrawDotListener, Id } from "../canvas/virtual/types.js";
-import { SizeChangeEvent, SizeChangeListener } from "../canvas/input/types.js";
+import { ICanvas, Size } from "../types.js";
+import { VoidUnsubscribe } from "../../types.js";
+import { Messaging1 } from "../../messaging/impl.js";
+import { IMessaging1 } from "../../messaging/types.js";
+import { IdGenerator } from "../../utilities/generator.js";
+import { Dot, DrawDotEvent, DrawDotListener, Id } from "./types.js";
+import { SizeChangeEvent, SizeChangeListener } from "../input/types.js";
+import { CanvasBase } from "../base.js";
 
 
-interface IVirtualDotGrid {
+interface IDotVirtualCanvas extends ICanvas {
     get size(): Size;
     get dotsX(): number;
     get dotsY(): number;
     get radius(): number;
     get spacing(): number;
 
-    onSizeChange(listener: SizeChangeListener): VoidUnsubscribe;
     onDrawDot(listener: DrawDotListener): VoidUnsubscribe;
 
     draw(dotsX: number, dotsY: number, radius: number, spacing: number): void;
@@ -22,9 +22,9 @@ interface IVirtualDotGrid {
     getDotById(id: string): Dot | undefined;
 }
 
-export class VirtualDotGrid implements IVirtualDotGrid {
+export class DotVirtualCanvas extends CanvasBase implements IDotVirtualCanvas {
     private readonly ids: IdGenerator;
-    private readonly messaging: IMessaging2<SizeChangeEvent, DrawDotEvent>;
+    private readonly messaging: IMessaging1<DrawDotEvent>;
 
     private dots: Map<Id, Dot>;
 
@@ -34,9 +34,11 @@ export class VirtualDotGrid implements IVirtualDotGrid {
     private s!: number;
 
     constructor() {
+        super();
+
         this.dots = new Map();
         this.ids = new IdGenerator();
-        this.messaging = new Messaging2(VirtualDotGrid.name);
+        this.messaging = new Messaging1(DotVirtualCanvas.name);
         this.messaging.start();
     }
 
@@ -56,19 +58,8 @@ export class VirtualDotGrid implements IVirtualDotGrid {
         return this.s;
     }
 
-    public get size(): Size {
-        const width = this.spacing + (this.x * this.radius) + ((this.x - 1) * this.spacing);
-        const height = this.spacing + (this.y * this.radius) + ((this.y - 1) * this.spacing);
-        const size = { width, height };
-        return size;
-    }
-
-    public onSizeChange(listener: SizeChangeListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel1(listener);
-    }
-
     public onDrawDot(listener: DrawDotListener): VoidUnsubscribe {
-        return this.messaging.listenOnChannel2(listener);
+        return this.messaging.listenOnChannel1(listener);
     }
 
     public draw(dotsX: number, dotsY: number, radius: number, spacing: number): void {
@@ -78,7 +69,8 @@ export class VirtualDotGrid implements IVirtualDotGrid {
         this.s = spacing;
 
         this.dots = this.createDots();
-        this.invokeSizeChange();
+        const newSize = this.calculateSize();
+        this.size = newSize;
         this.dots.forEach((dot) => this.invokeDrawDot(dot));
     }
 
@@ -96,6 +88,18 @@ export class VirtualDotGrid implements IVirtualDotGrid {
 
     public getDotById(id: string): Dot | undefined {
         return this.dots.get(id);
+    }
+
+    protected override initializeCore(): void {
+
+    }
+
+    protected override sizeChangeCore(): void {
+
+    }
+
+    protected override disposeCore(): void {
+
     }
 
     private createDots(): Map<Id, Dot> {
@@ -117,12 +121,15 @@ export class VirtualDotGrid implements IVirtualDotGrid {
         return dots;
     }
 
-    private invokeSizeChange(): void {
-        this.messaging.sendToChannel1(this.size);
+    private calculateSize(): Size {
+        const width = this.spacing + (this.x * this.radius) + ((this.x - 1) * this.spacing);
+        const height = this.spacing + (this.y * this.radius) + ((this.y - 1) * this.spacing);
+        const size = { width, height };
+        return size;
     }
 
     private invokeDrawDot(dot: Dot): void {
         const event = { dot };
-        this.messaging.sendToChannel2(event);
+        this.messaging.sendToChannel1(event);
     }
 }

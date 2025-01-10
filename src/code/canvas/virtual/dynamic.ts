@@ -10,10 +10,10 @@ export class DynamicVirtualCanvas extends VirtualCanvasBase {
     private dotVirtualCanvas: StaticVirtualCanvas;
 
     private link?: Link;
-    private lines: Array<Line>;
     private side: CanvasSide;
 
-    private idGenerator: IdGenerator;
+    private lines: Array<Line>;
+    private idsLines: IdGenerator;
 
     // #endregion
 
@@ -21,16 +21,16 @@ export class DynamicVirtualCanvas extends VirtualCanvasBase {
         super();
 
         this.dotVirtualCanvas = virtualDotCanvas;
-
-        this.lines = [];
         this.side = CanvasSide.Back;
 
-        this.idGenerator = new IdGenerator();
+        this.lines = [];
+        this.idsLines = new IdGenerator();
+
     }
     // #region interface 
 
     public draw(): void {
-        this.idGenerator.reset();
+        this.idsLines.reset();
 
         this.lines = this.createLines();
 
@@ -70,7 +70,7 @@ export class DynamicVirtualCanvas extends VirtualCanvasBase {
             super.invokeRemoveLink({ link: this.link });
         }
 
-        const id = this.idGenerator.next();
+        const id = this.idsLines.next();
         const from = clickedDot;
         const to = { id, x: position.x, y: position.y, radius: clickedDot.radius };
         const side = this.side;
