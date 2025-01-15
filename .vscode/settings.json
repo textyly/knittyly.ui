@@ -2,7 +2,8 @@
     "cSpell.words": [
         "copyfiles",
         "knittyly",
-        "textyly"
+        "textyly",
+        "Unhovered"
     ],
     "files.exclude": {
         "**/dist*": true,
@@ -15,5 +16,6 @@
         "**/.github": true,
         "**/LICENSE": true,
         "**/README*": true,
-    }
+    },
+    "typescript.preferences.importModuleSpecifierEnding": "js",
 }
