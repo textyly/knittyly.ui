@@ -1,4 +1,4 @@
-import { ICanvas, Size } from "../types.js";
+import { ICanvas } from "../types.js";
 import { Listener, VoidListener, VoidUnsubscribe } from "../../types.js";
 
 // #region types

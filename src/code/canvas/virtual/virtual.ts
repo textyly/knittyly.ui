@@ -1,9 +1,8 @@
 import { Size } from "../types.js";
-import { DotCanvas } from "./dot/dot.js";
-import { CueVirtualCanvas } from "./cue/cue.js";
-import { LineVirtualCanvas } from "./line/line.js";
+import { DotVirtualCanvas } from "./dot.js";
+import { CueVirtualCanvas } from "./cue.js";
+import { LineVirtualCanvas } from "./line.js";
 import { VirtualCanvasBase } from "./base.js";
-import { DotVirtualCanvas } from "./dot/virtual.js";
 import { IInputCanvas, MouseMoveEvent } from "../input/types.js";
 import {
     DotsConfig,
@@ -30,8 +29,7 @@ export class VirtualCanvas extends VirtualCanvasBase {
 
         this.input = input;
 
-        const dotCanvas = new DotCanvas();
-        this.dotVirtualCanvas = new DotVirtualCanvas(config, dotCanvas);
+        this.dotVirtualCanvas = new DotVirtualCanvas(config);
         this.lineVirtualCanvas = new LineVirtualCanvas(this.dotVirtualCanvas);
         this.cueVirtualCanvas = new CueVirtualCanvas(this.dotVirtualCanvas);
     }
@@ -90,14 +88,12 @@ export class VirtualCanvas extends VirtualCanvasBase {
     }
 
     private handleMouseMove(event: MouseMoveEvent): void {
-        this.dotVirtualCanvas.invokeMouseMove(event);
         this.cueVirtualCanvas.invokeMouseMove(event);
     }
 
     private handleMouseLeftButtonDown(event: MouseMoveEvent): void {
+        this.lineVirtualCanvas.invokeMouseLeftButtonDown(event);
         this.cueVirtualCanvas.invokeMouseLeftButtonDown(event);
-        this.lineVirtualCanvas.invokeMouseLeftButtonDown(event); // TODO: ???
-        this.dotVirtualCanvas.invokeMouseLeftButtonDown(event);
     }
 
     private handleDrawDot(event: DrawDotEvent): void {
@@ -163,10 +159,10 @@ export class VirtualCanvas extends VirtualCanvasBase {
         const removeLinkUn = this.cueVirtualCanvas.onRemoveLink(this.handleRemoveLink.bind(this));
         super.registerUn(removeLinkUn);
 
-        const hoverDotUn = this.dotVirtualCanvas.onHoverDot(this.handleHoverDot.bind(this));
+        const hoverDotUn = this.cueVirtualCanvas.onHoverDot(this.handleHoverDot.bind(this));
         super.registerUn(hoverDotUn);
 
-        const unhoverDotUn = this.dotVirtualCanvas.onUnhoverDot(this.handleUnhoverDot.bind(this));
+        const unhoverDotUn = this.cueVirtualCanvas.onUnhoverDot(this.handleUnhoverDot.bind(this));
         super.registerUn(unhoverDotUn);
 
         const dotCanvasSizeChangedUn = this.dotVirtualCanvas.onSizeChange(this.handleSizeChange.bind(this));
