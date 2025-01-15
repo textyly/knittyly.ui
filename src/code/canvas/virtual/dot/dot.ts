@@ -1,12 +1,13 @@
-import { Size } from "../types.js";
-import { CanvasBase } from "../base.js";
-import { VoidUnsubscribe } from "../../types.js";
-import { Messaging1 } from "../../messaging/impl.js";
-import { IMessaging1 } from "../../messaging/types.js";
-import { IdGenerator } from "../../utilities/generator.js";
-import { Dot, DrawDotEvent, DrawDotListener, Id, IDotVirtualCanvas } from "./types.js";
+import { Size } from "../../types.js";
+import { IDotCanvas } from "./types.js";
+import { CanvasBase } from "../../base.js";
+import { VoidUnsubscribe } from "../../../types.js";
+import { Messaging1 } from "../../../messaging/impl.js";
+import { IMessaging1 } from "../../../messaging/types.js";
+import { IdGenerator } from "../../../utilities/generator.js";
+import { Dot, DrawDotEvent, DrawDotListener, Id } from "../types.js";
 
-export class DotVirtualCanvas extends CanvasBase implements IDotVirtualCanvas {
+export class DotCanvas extends CanvasBase implements IDotCanvas {
     private readonly ids: IdGenerator;
     private readonly messaging: IMessaging1<DrawDotEvent>;
 
@@ -22,7 +23,7 @@ export class DotVirtualCanvas extends CanvasBase implements IDotVirtualCanvas {
 
         this.dots = new Map();
         this.ids = new IdGenerator();
-        this.messaging = new Messaging1(DotVirtualCanvas.name);
+        this.messaging = new Messaging1(DotCanvas.name);
         this.messaging.start();
     }
 

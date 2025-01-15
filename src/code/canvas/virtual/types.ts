@@ -35,28 +35,22 @@ export type UnhoverDotListener = Listener<UnhoverDotEvent>;
 // #region interfaces
 
 export interface IDotVirtualCanvas extends ICanvas {
-    get size(): Size;
-    get dotsX(): number;
-    get dotsY(): number;
-    get radius(): number;
-    get spacing(): number;
-
     onDrawDot(listener: DrawDotListener): VoidUnsubscribe;
-
-    draw(dotsX: number, dotsY: number, radius: number, spacing: number): void;
-    getDotByCoordinates(x: number, y: number): Dot | undefined;
-    getDotById(id: string): Dot | undefined;
 }
 
-export interface IVirtualCanvas extends ICanvas {
-    onRedraw(listener: VoidListener): VoidUnsubscribe;
-    onDrawDot(listener: DrawDotListener): VoidUnsubscribe;
+export interface ILineVirtualCanvas extends ICanvas {
     onDrawLine(listener: DrawLineListener): VoidUnsubscribe;
+}
+
+export interface ICueVirtualCanvas extends ICanvas {
     onDrawLink(listener: DrawLinkListener): VoidUnsubscribe;
     onRemoveLink(listener: RemoveLinkListener): VoidUnsubscribe;
     onHoverDot(listener: HoverDotListener): VoidUnsubscribe;
     onUnhoverDot(listener: UnhoverDotListener): VoidUnsubscribe;
+}
 
+export interface IVirtualCanvas extends IDotVirtualCanvas, ILineVirtualCanvas, ICueVirtualCanvas, ICanvas {
+    onRedraw(listener: VoidListener): VoidUnsubscribe;
     draw(): void;
 }
 
@@ -66,7 +60,8 @@ export interface IVirtualCanvas extends ICanvas {
 
 export enum CanvasSide {
     Front,
-    Back
+    Back,
+    Default = Back,
 }
 
 
